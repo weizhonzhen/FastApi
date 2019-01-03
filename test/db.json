@@ -1,0 +1,49 @@
+﻿{
+  "DataConfig": [
+    {
+      "ProviderName": "Oracle.ManagedDataAccess",
+      "DbType": "Oracle",
+      "ConnStr": "User Id=test;Password=test;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=test)));",
+      "IsOutSql": true,
+      "IsOutError": true,
+      "IsPropertyCache": true,
+      "IsMapSave": false,
+      "Flag": ":",
+      "FactoryClient": "Oracle.ManagedDataAccess.Client.OracleClientFactory",
+      "Key": "Api",
+      "DesignModel": "CodeFirst",
+      "SqlErrorType": "file",
+      "CacheType": "web"
+    },
+    {
+      "ProviderName": "Oracle.ManagedDataAccess",
+      "DbType": "Oracle",
+      "ConnStr": "User Id=qebemr;Password=qebsoft;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=168.100.1.69)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=emrtest)));",
+      "IsOutSql": true,
+      "IsOutError": true,
+      "IsPropertyCache": true,
+      "IsMapSave": false,
+      "Flag": ":",
+      "FactoryClient": "Oracle.ManagedDataAccess.Client.OracleClientFactory",
+      "Key": "TestEmr",
+      "DesignModel": "CodeFirst",
+      "SqlErrorType": "file",
+      "CacheType": "web"
+    },
+    {
+      "ProviderName": "Oracle.ManagedDataAccess",
+      "DbType": "Oracle",
+      "ConnStr": "User Id=bstest;Password=bstest;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=168.100.1.92)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=bstest)));",
+      "IsOutSql": true,
+      "IsOutError": true,
+      "IsPropertyCache": true,
+      "IsMapSave": false,
+      "Flag": ":",
+      "FactoryClient": "Oracle.ManagedDataAccess.Client.OracleClientFactory",
+      "Key": "TestHis",
+      "DesignModel": "CodeFirst",
+      "SqlErrorType": "file",
+      "CacheType": "web"
+    }
+  ]
+}
