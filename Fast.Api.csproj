@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>https://github.com/weizhonzhen/FastApi</Description>
+    <PackageProjectUrl>https://github.com/weizhonzhen/FastApi</PackageProjectUrl>
+    <Version>1.0.1</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Fast.Data.Core" Version="1.1.8" />
+  </ItemGroup>
+
+</Project>
