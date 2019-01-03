@@ -9,7 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fast.Data.Core" Version="1.1.8" />
+    <Compile Remove="TestApi\**" />
+    <EmbeddedResource Remove="TestApi\**" />
+    <None Remove="TestApi\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Fast.Data.Core" Version="1.1.9" />
   </ItemGroup>
 
 </Project>
