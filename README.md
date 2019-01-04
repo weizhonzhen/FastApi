@@ -3,8 +3,10 @@ easy dynamic builder api
 
 apidata is api table 
 
-apilog is api log
+apilog is api log action log
 
-apiparam is api param table 
+apimap is api map table for xml sql
+
+apimapparam is api map sql param  
 
 apitoken is api token
