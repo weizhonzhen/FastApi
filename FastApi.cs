@@ -49,25 +49,38 @@ namespace Fast.Api
 
                     if (isSuccess)
                     {
-                        var paramList = FastRead.Query<ApiParam>(a => a.Key.ToUpper() == key).OrderBy<ApiParam>(a => new { a.OderBy }).ToList<ApiParam>(db);
-                        var param = new List<DbParameter>();
-
-                        foreach (var item in paramList)
+                        var data = new List<Dictionary<string, object>>();
+                        var mapList = FastRead.Query<ApiMap>(a => a.Key.ToUpper() == key).OrderBy<ApiMap>(a => new { a.OderBy },false).ToList<ApiMap>(db);
+                       
+                        foreach (var map in mapList)
                         {
-                            var tempParam = DbProviderFactories.GetFactory(DbApi).CreateParameter();
-                            tempParam.ParameterName = item.Name;
-                            tempParam.Value = GetParam(context, item.Name);
-                            param.Add(tempParam);
+                            var param = new List<DbParameter>();
+                            var paramList = FastRead.Query<ApiMapParam>(a => a.MapId.ToUpper() == map.MapId.ToUpper()).OrderBy<ApiMapParam>(a => new { a.OderBy },false).ToList<ApiMapParam>(db);
+
+                            foreach (var item in paramList)
+                            {
+                                var tempParam = DbProviderFactories.GetFactory(DbApi).CreateParameter();
+                                tempParam.ParameterName = item.ParamName;
+
+                                if (item.Source == 1)
+                                    tempParam.Value = GetParam(context, item.ParamName);
+
+                                if (item.Source == 2)
+                                    tempParam.Value = data.FirstOrDefault().GetValue(item.ParamName);
+
+                                param.Add(tempParam);
+                            }
+
+                            if (map.IsWrite == 1)
+                                isSuccess = FastMap.Write(map.MapId, param.ToArray(), null, map.DbKey).IsSuccess;
+                            else
+                            {
+                                isSuccess = true;
+                                data = FastMap.Query(map.MapId, param.ToArray(), null, map.DbKey);
+                            }
                         }
 
-                        if (info.IsWrite == 1)
-                            isSuccess = FastMap.Write(info.MapId, param.ToArray(), null, info.DbKey).IsSuccess;
-                        else
-                        {
-                            isSuccess = true;
-                            var data = FastMap.Query(info.MapId, param.ToArray(), null, info.DbKey);
-                            dic.Add("data", data);
-                        }
+                        dic.Add("data", data);
                     }
                 }
                 else
@@ -163,7 +176,12 @@ namespace Fast.Api
             var log = new ApiLog();
             stopwatch.Stop();
             log.Key = key;
-            log.Milliseconds = stopwatch.Elapsed.TotalMilliseconds.ToStr();
+
+            if (stopwatch.Elapsed.TotalMilliseconds.ToStr().Length > 12)
+                log.Milliseconds = stopwatch.Elapsed.TotalMilliseconds.ToStr().Substring(0, 12);
+            else
+                log.Milliseconds = stopwatch.Elapsed.TotalMilliseconds.ToStr();
+
             log.VisitTime = DateTime.Now;
             log.AppSecret = GetParam(context, "AppSecret");
             log.Ip = GetClientIp(context);

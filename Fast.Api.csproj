@@ -5,14 +5,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>https://github.com/weizhonzhen/FastApi</Description>
     <PackageProjectUrl>https://github.com/weizhonzhen/FastApi</PackageProjectUrl>
-    <Version>1.0.1</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="TestApi\**" />
-    <EmbeddedResource Remove="TestApi\**" />
-    <None Remove="TestApi\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Fast.Data.Core" Version="1.1.9" />
