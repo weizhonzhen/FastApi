@@ -22,5 +22,11 @@ namespace Fast.Api.DataModel
         /// </summary>
         [Column(Comments = "是否绑定Ip 1=是,0=否", DataType = "number(1,0)")]
         public decimal IsBindIp { get; set; }
+
+        /// <summary>
+        /// ip地址
+        /// </summary>
+        [Column(Comments = "ip地址", DataType = "varchar2",Length =32)]
+        public string IpAddress { get; set; }
     }
 }

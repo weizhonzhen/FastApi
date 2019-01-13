@@ -39,7 +39,7 @@ namespace Fast.Api.DataModel
         /// <summary>
         /// 请求时间秒
         /// </summary>
-        [Column(Comments = "来源Ip", DataType = "varchar2", Length = 12)]
+        [Column(Comments = "请求时间秒", DataType = "varchar2", Length = 12)]
         public string Milliseconds { get; set; }
     }
 }

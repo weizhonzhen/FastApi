@@ -1,15 +1,15 @@
-﻿using System.Text;
+﻿using Fast.Api.DataModel;
 using FastData.Core;
 using FastData.Core.Context;
-using System.Collections.Generic;
 using FastUntility.Core.Base;
-using Fast.Api.DataModel;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
-using System;
-using System.Linq;
 using System.IO;
-using Microsoft.AspNetCore.Http;
+using System.Linq;
+using System.Text;
 
 namespace Fast.Api
 {
@@ -61,13 +61,7 @@ namespace Fast.Api
                             {
                                 var tempParam = DbProviderFactories.GetFactory(DbApi).CreateParameter();
                                 tempParam.ParameterName = item.ParamName;
-
-                                if (item.Source == 1)
-                                    tempParam.Value = GetParam(context, item.ParamName);
-
-                                if (item.Source == 2)
-                                    tempParam.Value = data.FirstOrDefault().GetValue(item.ParamName);
-
+                                tempParam.Value = GetDbPrarm(item.Source, data.FirstOrDefault(), item.ParamName, context);
                                 param.Add(tempParam);
                             }
 
@@ -77,6 +71,10 @@ namespace Fast.Api
                             {
                                 isSuccess = true;
                                 data = FastMap.Query(map.MapId, param.ToArray(), null, map.DbKey);
+
+                                //子map
+                                if (FastRead.Query<ApiMapLeaf>(a => a.MapId.ToUpper() == map.MapId.ToUpper()).ToCount(db) > 0)
+                                    data = GetLeafMap(db, map, data, context);
                             }
                         }
 
@@ -96,6 +94,57 @@ namespace Fast.Api
             }
         }
 
+        #region 子map
+        /// <summary>
+        /// 子map
+        /// </summary>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public static List<Dictionary<string,object>> GetLeafMap(DataContext db, ApiMap map, List<Dictionary<string, object>> data,HttpContext context )
+        {
+            var param = new List<DbParameter>();
+            var leafList= FastRead.Query<ApiMapLeaf>(a => a.MapId.ToUpper() == map.MapId.ToUpper()).OrderBy<ApiMapLeaf>(a => new { a.OderBy }, false).ToList<ApiMapLeaf>(db);
+            var tempData = data;
+
+            foreach (var leafInfo in leafList)
+            {
+                foreach (var item in tempData)
+                {
+                    var leafParam = FastRead.Query<ApiMapLeafParam>(a => a.LeafMapId.ToUpper() == leafInfo.LeafMapId.ToUpper()).ToList<ApiMapParam>(db);
+
+                    param.Clear();
+                    foreach (var leafItem in leafParam)
+                    {
+                        var tempParam = DbProviderFactories.GetFactory(DbApi).CreateParameter();
+                        tempParam.ParameterName = leafItem.ParamName;
+                        tempParam.Value = GetDbPrarm(leafItem.Source, item, leafItem.ParamName, context);
+                        param.Add(tempParam);
+                    }
+
+                    var tempDic = FastMap.Query(map.MapId, param.ToArray(), null, map.DbKey).FirstOrDefault();
+
+                    //参数默认值
+                    if (leafInfo.ResultParam.IndexOf('|') > 0)
+                    {
+                        data.Remove(item);
+                        foreach(var temp in leafInfo.ResultParam.Split('|'))
+                        {
+                            item.Add(temp, tempDic.GetValue(temp));
+                        }
+                        data.Add(item);
+                    }
+                    else if (!string.IsNullOrEmpty(leafInfo.ResultParam))
+                    {
+                        data.Remove(item);
+                        item.Add(leafInfo.ResultParam, tempDic.GetValue(leafInfo.ResultParam));
+                        data.Add(item);
+                    }                    
+                }
+            }
+            return data;
+        }
+        #endregion
+
         #region 验证权限访问
         /// <summary>
         /// 验证权限访问
@@ -106,11 +155,14 @@ namespace Fast.Api
         /// <returns></returns>
         public static bool CheckToken(HttpContext context, ApiData api,DataContext db)
         {
-            var AppSecret = GetParam(context, "AppSecret").ToUpper();
+            var AppSecret = GetUrlParam(context, "AppSecret").ToUpper();
 
             if (FastRead.Query<ApiToken>(a => a.AppSecret.ToUpper() == AppSecret).ToCount(db) > 0)
             {
                 var info = FastRead.Query<ApiToken>(a => a.AppSecret.ToUpper() == AppSecret).ToItem<ApiToken>(db);
+
+                if (info.IsBindIp == 1 && GetClientIp(context) != info.IpAddress)
+                    return false;
 
                 if (info.Key.IndexOf(',') > 0)
                 {
@@ -128,6 +180,26 @@ namespace Fast.Api
         }
         #endregion
 
+        #region 获取map参数值 
+        /// <summary>
+        /// 获取map参数值
+        /// </summary>
+        /// <param name="Source"></param>
+        /// <returns></returns>
+        public static object GetDbPrarm(decimal source,Dictionary<string,object> dic ,string paramName,HttpContext context)
+        {
+            //url
+            if (source == 1)
+               return  GetUrlParam(context, paramName);
+
+            //map
+            if (source == 2)
+                return dic.GetValue(paramName);
+
+            return "";
+        }
+        #endregion
+
         #region 获取参数值
         /// <summary>
         /// 获取参数值
@@ -135,7 +207,7 @@ namespace Fast.Api
         /// <param name="context"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static string GetParam(HttpContext context,string name)
+        public static string GetUrlParam(HttpContext context,string name)
         { 
             if (context.Request.Method.ToLower() == "get")
               return context.Request.Query[name].ToStr();
@@ -183,7 +255,7 @@ namespace Fast.Api
                 log.Milliseconds = stopwatch.Elapsed.TotalMilliseconds.ToStr();
 
             log.VisitTime = DateTime.Now;
-            log.AppSecret = GetParam(context, "AppSecret");
+            log.AppSecret = GetUrlParam(context, "AppSecret");
             log.Ip = GetClientIp(context);
 
             if (string.IsNullOrEmpty(context.Request.QueryString.Value))

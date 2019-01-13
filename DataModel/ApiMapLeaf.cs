@@ -2,15 +2,12 @@
 
 namespace Fast.Api.DataModel
 {
-    [Table(Comments = "map参数")]
-    public class ApiMap
+    /// <summary>
+    /// 子map
+    /// </summary>
+    [Table(Comments = "子map")]
+    public class ApiMapLeaf
     {
-        /// <summary>
-        /// 接口key
-        /// </summary>
-        [Column(Comments = "接口key", DataType = "varchar2", Length = 16, IsNull = false)]
-        public string Key { get; set; }
-
         /// <summary>
         /// map语句id
         /// </summary>
@@ -18,17 +15,17 @@ namespace Fast.Api.DataModel
         public string MapId { get; set; }
         
         /// <summary>
+        /// 子map语句id
+        /// </summary>
+        [Column(Comments = "子map语句id", DataType = "varchar2", Length = 32, IsNull = false)]
+        public string LeafMapId { get; set; }
+
+        /// <summary>
         /// map备注
         /// </summary>
         [Column(Comments = "参数备注", DataType = "varchar2", Length = 64)]
         public string Remark { get; set; }
-
-        /// <summary>
-        /// 是否写 1=写,0=读取
-        /// </summary>
-        [Column(Comments = "是否写 1=写,0=读取", DataType = "number(1,0)")]
-        public decimal IsWrite { get; set; }
-
+        
         /// <summary>
         /// 数据库key
         /// </summary>
@@ -40,5 +37,11 @@ namespace Fast.Api.DataModel
         /// </summary>
         [Column(Comments = "map排序", DataType = "number(1,0)", IsNull = false)]
         public decimal OderBy { get; set; }
+        
+        /// <summary>
+        /// 结果参数名(多个|隔开)
+        /// </summary>
+        [Column(Comments = "结果参数名(多个|隔开)", DataType = "varchar2", Length = 255, IsNull = true)]
+        public string ResultParam { get; set; }
     }
 }
