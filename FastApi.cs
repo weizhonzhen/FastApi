@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Web;
 
 namespace Fast.Api
 {
@@ -200,22 +201,52 @@ namespace Fast.Api
         }
         #endregion
 
-        #region 获取参数值
+        #region 获取参数
         /// <summary>
-        /// 获取参数值
+        /// 获取参数
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="name"></param>
+        /// <param name="content"></param>
         /// <returns></returns>
-        public static string GetUrlParam(HttpContext context,string name)
-        { 
-            if (context.Request.Method.ToLower() == "get")
-              return context.Request.Query[name].ToStr();
+        private static string GetUrlParam(HttpContext context)
+        {
+            var content = HttpUtility.UrlDecode(new StreamReader(context.Request.Body).ReadToEnd());
+            var param = HttpUtility.UrlDecode(context.Request.QueryString.Value);
 
-            if (context.Request.Method.ToLower() == "post")
-                return context.Request.Form[name].ToStr();
+            if (string.IsNullOrEmpty(param))
+                param = content;
 
-            return "";
+            if (param.Substring(0, 1) == "?")
+                param = param.Substring(1, param.Length - 1);
+
+            return param;
+        }
+        #endregion
+
+        #region 获取参数
+        /// <summary>
+        /// 获取参数
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        private static string GetUrlParam(HttpContext context, string key)
+        {
+            var dic = new Dictionary<string, object>();
+            var param = GetUrlParam(context);
+            if (param.IndexOf('&') > 0)
+            {
+                foreach (var temp in param.Split('&'))
+                {
+                    if (temp.IndexOf('=') > 0)
+                        dic.Add(temp.Split('=')[0], temp.Split('=')[1]);
+                }
+            }
+            else
+            {
+                if (param.IndexOf('=') > 0)
+                    dic.Add(param.Split('=')[0], param.Split('=')[1]);
+            }
+
+            return dic.GetValue(key).ToStr();
         }
         #endregion
 
@@ -257,11 +288,7 @@ namespace Fast.Api
             log.VisitTime = DateTime.Now;
             log.AppSecret = GetUrlParam(context, "AppSecret");
             log.Ip = GetClientIp(context);
-
-            if (string.IsNullOrEmpty(context.Request.QueryString.Value))
-                log.Param = new StreamReader(context.Request.Body).ReadToEnd();
-            else
-                log.Param = context.Request.QueryString.Value;
+            log.Param = GetUrlParam(context);
 
             if (!string.IsNullOrEmpty(key) && key.ToLower() != "favicon.ico")
                 db.Add(log);
