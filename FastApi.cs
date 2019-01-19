@@ -21,6 +21,7 @@ namespace Fast.Api
 
         public void Content(HttpContext context)
         {
+            var urlParam = GetUrlParam(context);
             var isSuccess = true;
             var dic = new Dictionary<string, object>();
             var stopwatch = new Stopwatch();
@@ -41,7 +42,7 @@ namespace Fast.Api
 
                     if (info.IsAnonymous == 0)
                     {
-                        if (!CheckToken(context, info, db))
+                        if (!CheckToken(context, info, db, urlParam))
                         {
                             isSuccess = false;
                             dic.Add("error", "接口无权访问");
@@ -51,18 +52,18 @@ namespace Fast.Api
                     if (isSuccess)
                     {
                         var data = new List<Dictionary<string, object>>();
-                        var mapList = FastRead.Query<ApiMap>(a => a.Key.ToUpper() == key).OrderBy<ApiMap>(a => new { a.OderBy },false).ToList<ApiMap>(db);
-                       
+                        var mapList = FastRead.Query<ApiMap>(a => a.Key.ToUpper() == key).OrderBy<ApiMap>(a => new { a.OderBy }, false).ToList<ApiMap>(db);
+
                         foreach (var map in mapList)
                         {
                             var param = new List<DbParameter>();
-                            var paramList = FastRead.Query<ApiMapParam>(a => a.MapId.ToUpper() == map.MapId.ToUpper()).OrderBy<ApiMapParam>(a => new { a.OderBy },false).ToList<ApiMapParam>(db);
+                            var paramList = FastRead.Query<ApiMapParam>(a => a.MapId.ToUpper() == map.MapId.ToUpper()).OrderBy<ApiMapParam>(a => new { a.OderBy }, false).ToList<ApiMapParam>(db);
 
                             foreach (var item in paramList)
                             {
                                 var tempParam = DbProviderFactories.GetFactory(DbApi).CreateParameter();
                                 tempParam.ParameterName = item.ParamName;
-                                tempParam.Value = GetDbPrarm(item.Source, data.FirstOrDefault(), item.ParamName, context);
+                                tempParam.Value = GetDbPrarm(item.Source, data.FirstOrDefault(), item.ParamName, urlParam);
                                 param.Add(tempParam);
                             }
 
@@ -75,7 +76,7 @@ namespace Fast.Api
 
                                 //子map
                                 if (FastRead.Query<ApiMapLeaf>(a => a.MapId.ToUpper() == map.MapId.ToUpper()).ToCount(db) > 0)
-                                    data = GetLeafMap(db, map, data, context);
+                                    data = GetLeafMap(db, map, data, urlParam);
                             }
                         }
 
@@ -87,8 +88,8 @@ namespace Fast.Api
                     isSuccess = false;
                     dic.Add("error", "接口不存在");
                 }
-                
-                Log(context, stopwatch, key, db);
+
+                Log(context, stopwatch, key, db, urlParam);
                 dic.Add("isSuccess", isSuccess);
                 context.Response.StatusCode = 200;
                 context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8);
@@ -101,10 +102,10 @@ namespace Fast.Api
         /// </summary>
         /// <param name="db"></param>
         /// <returns></returns>
-        public static List<Dictionary<string,object>> GetLeafMap(DataContext db, ApiMap map, List<Dictionary<string, object>> data,HttpContext context )
+        public static List<Dictionary<string, object>> GetLeafMap(DataContext db, ApiMap map, List<Dictionary<string, object>> data, string urlParam)
         {
             var param = new List<DbParameter>();
-            var leafList= FastRead.Query<ApiMapLeaf>(a => a.MapId.ToUpper() == map.MapId.ToUpper()).OrderBy<ApiMapLeaf>(a => new { a.OderBy }, false).ToList<ApiMapLeaf>(db);
+            var leafList = FastRead.Query<ApiMapLeaf>(a => a.MapId.ToUpper() == map.MapId.ToUpper()).OrderBy<ApiMapLeaf>(a => new { a.OderBy }, false).ToList<ApiMapLeaf>(db);
             var tempData = data;
 
             foreach (var leafInfo in leafList)
@@ -118,7 +119,7 @@ namespace Fast.Api
                     {
                         var tempParam = DbProviderFactories.GetFactory(DbApi).CreateParameter();
                         tempParam.ParameterName = leafItem.ParamName;
-                        tempParam.Value = GetDbPrarm(leafItem.Source, item, leafItem.ParamName, context);
+                        tempParam.Value = GetDbPrarm(leafItem.Source, item, leafItem.ParamName, urlParam);
                         param.Add(tempParam);
                     }
 
@@ -128,7 +129,7 @@ namespace Fast.Api
                     if (leafInfo.ResultParam.IndexOf('|') > 0)
                     {
                         data.Remove(item);
-                        foreach(var temp in leafInfo.ResultParam.Split('|'))
+                        foreach (var temp in leafInfo.ResultParam.Split('|'))
                         {
                             item.Add(temp, tempDic.GetValue(temp));
                         }
@@ -139,7 +140,7 @@ namespace Fast.Api
                         data.Remove(item);
                         item.Add(leafInfo.ResultParam, tempDic.GetValue(leafInfo.ResultParam));
                         data.Add(item);
-                    }                    
+                    }
                 }
             }
             return data;
@@ -154,9 +155,9 @@ namespace Fast.Api
         /// <param name="api"></param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public static bool CheckToken(HttpContext context, ApiData api,DataContext db)
+        public static bool CheckToken(HttpContext context, ApiData api, DataContext db, string urlParam)
         {
-            var AppSecret = GetUrlParam(context, "AppSecret").ToUpper();
+            var AppSecret = GetUrlParam(urlParam, "AppSecret").ToUpper();
 
             if (FastRead.Query<ApiToken>(a => a.AppSecret.ToUpper() == AppSecret).ToCount(db) > 0)
             {
@@ -187,11 +188,11 @@ namespace Fast.Api
         /// </summary>
         /// <param name="Source"></param>
         /// <returns></returns>
-        public static object GetDbPrarm(decimal source,Dictionary<string,object> dic ,string paramName,HttpContext context)
+        public static object GetDbPrarm(decimal source, Dictionary<string, object> dic, string paramName, string urlParam)
         {
             //url
             if (source == 1)
-               return  GetUrlParam(context, paramName);
+                return urlParam;
 
             //map
             if (source == 2)
@@ -228,25 +229,24 @@ namespace Fast.Api
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        private static string GetUrlParam(HttpContext context, string key)
+        private static string GetUrlParam(string urlParam, string key)
         {
             var dic = new Dictionary<string, object>();
-            var param = GetUrlParam(context);
-            if (param.IndexOf('&') > 0)
+            if (urlParam.IndexOf('&') > 0)
             {
-                foreach (var temp in param.Split('&'))
+                foreach (var temp in urlParam.Split('&'))
                 {
-                    if (temp.IndexOf('=') > 0)
-                        dic.Add(temp.Split('=')[0], temp.Split('=')[1]);
+                    if (temp.IndexOf('=') > 0 && temp.Split('=')[0].ToLower() == key.ToLower())
+                        return temp.Split('=')[1];
                 }
             }
             else
             {
-                if (param.IndexOf('=') > 0)
-                    dic.Add(param.Split('=')[0], param.Split('=')[1]);
+                if (urlParam.IndexOf('=') > 0 && urlParam.Split('=')[0].ToLower() == key.ToLower())
+                    return urlParam.Split('=')[1];
             }
 
-            return dic.GetValue(key).ToStr();
+            return "";
         }
         #endregion
 
@@ -274,8 +274,8 @@ namespace Fast.Api
         /// <param name="stopwatch"></param>
         /// <param name="key"></param>
         /// <param name="db"></param>
-        public static void Log(HttpContext context, Stopwatch stopwatch,string key,DataContext db)
-        { 
+        public static void Log(HttpContext context, Stopwatch stopwatch, string key, DataContext db, string urlParam)
+        {
             var log = new ApiLog();
             stopwatch.Stop();
             log.Key = key;
@@ -286,9 +286,9 @@ namespace Fast.Api
                 log.Milliseconds = stopwatch.Elapsed.TotalMilliseconds.ToStr();
 
             log.VisitTime = DateTime.Now;
-            log.AppSecret = GetUrlParam(context, "AppSecret");
+            log.AppSecret = GetUrlParam(urlParam, "AppSecret");
             log.Ip = GetClientIp(context);
-            log.Param = GetUrlParam(context);
+            log.Param = urlParam;
 
             if (!string.IsNullOrEmpty(key) && key.ToLower() != "favicon.ico")
                 db.Add(log);
