@@ -9,8 +9,7 @@ namespace Fast.Api
 
         public Task InvokeAsync(HttpContext context, IFastApi response)
         {
-            response.Content(context);
-            return Task.CompletedTask;
+            return response.ContentAsync(context);
         }
     }
 }

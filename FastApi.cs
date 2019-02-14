@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace Fast.Api
@@ -19,7 +20,7 @@ namespace Fast.Api
         //接口数据库
         public static string DbApi = "Api";
 
-        public void Content(HttpContext context)
+        public Task ContentAsync(HttpContext context)
         {
             var urlParam = GetUrlParam(context);
             var isSuccess = true;
@@ -92,7 +93,7 @@ namespace Fast.Api
                 Log(context, stopwatch, key, db, urlParam);
                 dic.Add("isSuccess", isSuccess);
                 context.Response.StatusCode = 200;
-                context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8);
+               return context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8);
             }
         }
 

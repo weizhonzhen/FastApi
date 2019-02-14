@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace Fast.Api
 {
     public interface IFastApi
     {
-        void Content(HttpContext content);
+        Task ContentAsync(HttpContext content);
     }
 }
