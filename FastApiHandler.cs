@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
 namespace Fast.Api
@@ -7,9 +7,9 @@ namespace Fast.Api
     {
         public FastApiHandler(RequestDelegate request) { }
 
-        public Task InvokeAsync(HttpContext context, IFastApi response)
+        public async Task InvokeAsync(HttpContext context, IFastApi response)
         {
-            return response.ContentAsync(context);
+            await response.ContentAsync(context).ConfigureAwait(false);
         }
     }
 }
