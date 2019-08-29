@@ -55,6 +55,7 @@ app.UseMiddleware<FastApiHandler>();//使用中间件
     </dynamic>
  </select>
  </sqlMap>
+ db对应db.json中的key
 ```
 
 访问的地址：http://127.0.0.1/testurl?name=aa&id=1
