@@ -2,13 +2,18 @@
 动态生成读api，只需配数据库连接及xml文件
 
 1、ConfigureServices
+```csharp
 services.AddTransient<IFastApi, FastApi>();//注入
 FastMap.InstanceMap();//读取xml
+```
 
 2、Configure
+```csharp
 app.UseMiddleware<FastApiHandler>();//使用中间件
+```
  
 3、配配数据库连接 db.json
+```csharp
 {
   "DataConfig": [
     {
@@ -29,13 +34,17 @@ app.UseMiddleware<FastApiHandler>();//使用中间件
     }
   ]
 }
+```
 
 4、配置xml读取map.json
+```csharp
 {
   "SqlMap": { "Path": [ "map/Patient.xml" ] }
 }
+```
 
 5、配置xml和成接口
+```csharp
 <?xml version="1.0" encoding="utf-8" ?>
 <sqlMap>
    <select id="testurl" db="Api">
@@ -45,7 +54,8 @@ app.UseMiddleware<FastApiHandler>();//使用中间件
       <isNotNullOrEmpty prepend=" and " property="id">a.id = :id</isNotNullOrEmpty>
     </dynamic>
  </select>
-</sqlMap
+ </sqlMap>
+```
 
 访问的地址：http://127.0.0.1/testurl?name=aa&id=1
 支持post get 等所有方式请求
