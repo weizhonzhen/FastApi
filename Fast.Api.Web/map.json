@@ -1,0 +1,3 @@
+﻿{
+  "SqlMap": { "Path": [ "map/Patient.xml" ] }
+}
