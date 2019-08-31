@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+  <!--获取电子病历中病人体重-->
+  <select id="BRZD" db="Emr">
+    select a.icd as icd10,a.zdmc as zdmc from t_zd_zdb a,t_xt_zybr b where a.zyxh = b.zyxh
+    <dynamic prepend="">
+      <isNotNullOrEmpty prepend=" and " property="hiszyxh">b.hiszyxh = :hiszyxh</isNotNullOrEmpty>
+    </dynamic>
+  </select>
+
+  <!--获取电子病历中病人所有诊断-->
+  <select id="BRTZ" db="Emr">
+    select tx51 as tz from t_xt_zybr z,t_zyys_tgjc t where z.zyxh=t.zyxh 
+    <dynamic prepend="">
+      <isNotNullOrEmpty prepend=" and " property="ZYHM">z.bah = :ZYHM</isNotNullOrEmpty>
+    </dynamic>
+  </select>
+
+  <!--MS_BRDA信息-->
+  <select id="MS_BRDA" db="His">
+    select A.BRID,A.MZHM,A.BRXM,DECODE(A.BRXB,1,'男','女') as xb,A.SFZH,A.HKDZ,A.JTDH from MS_BRDA A
+    <dynamic prepend=" where 1=1">
+      <isNotNullOrEmpty prepend=" and " property="mzhm">A.MZHM = :MZHM</isNotNullOrEmpty>
+    </dynamic>
+  </select>
+
+ <!--获取医惠VTE信息-->
+  <select id="VTE" db="EWELL">
+    select t.* from V_EWELL_SCORE_VTE t
+    <dynamic prepend=" where 1=1">
+      <isNotNullOrEmpty prepend=" and " property="patient_id">t.patient_id = :patient_id</isNotNullOrEmpty>
+    </dynamic>
+  </select>	
+</sqlMap>
