@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Fast.Api
@@ -58,7 +59,10 @@ namespace Fast.Api
             dic.Add("isSuccess", isSuccess);
             context.Response.StatusCode = 200;
 
-            await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
+            if (dic.Count > 1)
+                await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
+            else
+                await context.Response.WriteAsync(BaseJson.ModelToJson(dic?.First()), Encoding.UTF8).ConfigureAwait(false);
         }
         
         #region 获取参数
