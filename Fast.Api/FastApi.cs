@@ -1,12 +1,12 @@
-﻿using FastData.Core;
+using FastData.Core;
 using FastUntility.Core.Base;
+using FastUntility.Core.Page;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Fast.Api
@@ -24,7 +24,7 @@ namespace Fast.Api
 
             context.Response.ContentType = "application/Json";
             var key = context.Request.Path.Value.ToStr().Replace("/", "").ToUpper();
-            
+
             if (FastMap.IsExists(key))
             {
                 var data = new List<Dictionary<string, object>>();
@@ -40,15 +40,30 @@ namespace Fast.Api
                         param.Add(tempParam);
                 }
 
-                if (param.Count > 0)
+                var pageSize = GetUrlParam(urlParam, "PageSize");
+                var pageId = GetUrlParam(urlParam, "PageId");
+                if (pageSize != "" && pageId != "")
                 {
+                    var page = new PageModel();
+                    page.PageSize = pageSize.ToInt(0) == 0 ? 10 : pageSize.ToInt(0);
+                    page.PageId = pageId.ToInt(0) == 0 ? 1 : pageId.ToInt(0);
+                    var info = FastMap.QueryPage(page, key, param.ToArray());
                     isSuccess = true;
-                    data = FastMap.Query(key, param.ToArray());
+                    dic.Add("data", info.list);
+                    dic.Add("page", info.pModel);
                 }
                 else
-                    isSuccess = false;
+                {
+                    if (param.Count > 0)
+                    {
+                        isSuccess = true;
+                        data = FastMap.Query(key, param.ToArray());
+                    }
+                    else
+                        isSuccess = false;
 
-                dic.Add("data", data);
+                    dic.Add("data", data);
+                }
             }
             else
             {
@@ -59,10 +74,7 @@ namespace Fast.Api
             dic.Add("isSuccess", isSuccess);
             context.Response.StatusCode = 200;
 
-            if (dic.Count > 1)
-                await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
-            else
-                await context.Response.WriteAsync(BaseJson.ModelToJson(dic?.First()), Encoding.UTF8).ConfigureAwait(false);
+            await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
         }
         
         #region 获取参数
