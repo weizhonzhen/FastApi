@@ -40,6 +40,7 @@ namespace Fast.Api
                         param.Add(tempParam);
                 }
 
+                isSuccess = true;
                 var pageSize = GetUrlParam(urlParam, "PageSize");
                 var pageId = GetUrlParam(urlParam, "PageId");
                 if (pageSize != "" && pageId != "")
@@ -48,7 +49,6 @@ namespace Fast.Api
                     page.PageSize = pageSize.ToInt(0) == 0 ? 10 : pageSize.ToInt(0);
                     page.PageId = pageId.ToInt(0) == 0 ? 1 : pageId.ToInt(0);
                     var info = FastMap.QueryPage(page, key, param.ToArray());
-                    isSuccess = true;
                     dic.Add("data", info.list);
                     dic.Add("page", info.pModel);
                 }
@@ -56,13 +56,17 @@ namespace Fast.Api
                 {
                     if (param.Count > 0)
                     {
-                        isSuccess = true;
                         data = FastMap.Query(key, param.ToArray());
+                        dic.Add("data", data);
                     }
                     else
-                        isSuccess = false;
-
-                    dic.Add("data", data);
+                    {
+                        var page = new PageModel();
+                        page.PageSize = 100;
+                        page.PageId = 1;
+                        var info = FastMap.QueryPage(page, key, param.ToArray());
+                        dic.Add("data", info.list);
+                    }
                 }
             }
             else
