@@ -40,17 +40,24 @@ namespace Fast.Api
                         param.Add(tempParam);
                 }
 
-                var pageSize = GetUrlParam(urlParam, "PageSize");
-                var pageId = GetUrlParam(urlParam, "PageId");
-                if (pageSize != "" && pageId != "")
+                if (FastMap.MapType(key).ToLower() == "page")
                 {
+                    var pageSize = GetUrlParam(urlParam, "PageSize");
+                    var pageId = GetUrlParam(urlParam, "PageId");
                     isSuccess = true;
                     var page = new PageModel();
+
                     page.PageSize = pageSize.ToInt(0) == 0 ? 10 : pageSize.ToInt(0);
                     page.PageId = pageId.ToInt(0) == 0 ? 1 : pageId.ToInt(0);
                     var info = FastMap.QueryPage(page, key, param.ToArray());
                     dic.Add("data", info.list);
                     dic.Add("page", info.pModel);
+                }
+                else if (FastMap.MapType(key).ToLower() == "all")
+                {
+                    isSuccess = true;
+                    data = FastMap.Query(key, param.ToArray());
+                    dic.Add("data", data);
                 }
                 else
                 {
