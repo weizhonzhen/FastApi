@@ -9,13 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="DataModel\**" />
-    <EmbeddedResource Remove="DataModel\**" />
-    <None Remove="DataModel\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Fast.Data.Core" Version="1.7.6" />
+    <PackageReference Include="Fast.Data.Core" Version="1.7.8" />
   </ItemGroup>
 
 </Project>
