@@ -1,0 +1,76 @@
+﻿<html>
+<head>
+    <title>动态生成接口文档(FastApi)</title>
+    <script src="/Scripts/jquery-min.js"></script>
+    <link href="/Content/home.css" rel="stylesheet" />
+</head>
+<body>
+    <h3 style="color:red;text-align:center;">动态生成接口文档(FastApi)</h3>
+    <div style="width:85%;margin:0 auto;margin-top:-10px;">
+        @{
+            foreach (var item in FastData.Core.FastMap.Api)
+            {
+                var name = FastData.Core.FastMap.MapParam(item);
+                <label class="left"><font color="blue">http://@Context.Request.Host/@item</font></label>
+                <label class="right" data-id="@item"><font color="green">显示参数</font></label>
+                <table id="@item">
+                    @if (name.Count == 1)
+                    {
+                        <tr>
+                            <td width="45%" align="left"><span>@name[0]：</span><input type="text" name="@name[0]" id="@name[0]"/></td>
+                            <td width="10%" align="center"><button data-id="@item" data-url="http://@Context.Request.Host/@item" data-result="textarea@(item)">测试</button></td>
+                            <td width="45%" align="left"><textarea cols="50" id="textarea@(item)" rows="5"></textarea></td>
+                        </tr>
+                    }
+                    else if (name.Count > 1)
+                    {
+                        var i = 0;
+                        foreach (var temp in name)
+                        {
+                            if (i == 0)
+                            {
+                                <tr>
+                                    <td width="45%" align="left"><span>@temp：</span><input type="text" name="@temp" id="@temp"/></td>
+                                    <td width="10%" align="center" rowspan="@name.Count"><button data-id="@item" data-result="textarea@(item)" data-url="http://@Context.Request.Host/@item">测试</button></td>
+                                    <td width="45%" align="left" rowspan="@name.Count"><textarea cols="50" id="textarea@(item)" rows="5"></textarea></td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td width="45%" align="left"><span>@temp：</span><input type="text" name="@temp" id="@temp"/></td>
+                                </tr>
+                            }
+                            i++;
+                        }
+                    }
+                </table>
+            }
+        }
+    </div>
+</body>
+</html>
+<script>
+    $("div label").click(function () {
+        var id = $(this).data("id");
+        $("#" + id).show();
+        $("table").each(function () {
+            if ($(this).attr("id") != id)
+                $(this).hide();
+        });
+    });
+
+    $("button").click(function () {
+        var id = $(this).data("id");
+        var result = $(this).data("result");
+        $.ajax({
+            type: "POST",
+            url: $(this).data("url"),
+            data: $("#" + id + " input" ).serialize(),
+            success: function (data) {
+                debugger;
+                $("#" + result).val(data);
+            }
+        });
+    });
+</script>
