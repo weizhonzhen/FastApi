@@ -47,7 +47,7 @@ app.UseMiddleware<FastApiHandler>();//使用中间件
 ```csharp
 <?xml version="1.0" encoding="utf-8" ?>
 <sqlMap>
-   <select id="testurl" db="Api">
+   <select id="testurl" db="Api" type="param">
     select * from table a
     <dynamic prepend=" where 1=1 ">
       <isNotNullOrEmpty prepend=" and " property="name">a.name = :name</isNotNullOrEmpty>      
@@ -56,9 +56,10 @@ app.UseMiddleware<FastApiHandler>();//使用中间件
  </select>
  </sqlMap>
  db对应db.json中的key
+ type分三种 1、"all" 查询所有可以不用传参数 2、"param" 根据参数查询参数必须填写 3、page 分页查询参数如果没有查询第一页
 ```
-
+接口地址：http://127.0.0.1/home/index
 访问的地址：http://127.0.0.1/testurl?name=aa&id=1
 访问的分页地址：http://127.0.0.1/testurl?name=aa&id=1&pageid=1&pagesize=10
-支持post get 等所有方式请求
+支持post get 等所有方式请求![](https://raw.githubusercontent.com/weizhonzhen/FastApi/master/img.png)
 
