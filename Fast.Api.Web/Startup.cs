@@ -1,4 +1,4 @@
-﻿using FastData.Core;
+using FastData.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,12 +26,20 @@ namespace Fast.Api.Web
                 options.AddPolicy("any", builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
             });
 
-           FastMap.InstanceMap();
+            services.AddMvc();
+            FastMap.InstanceMap();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseStaticFiles();
             app.UseMiddleware<FastApiHandler>();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                name: "default",
+                template: "{controller=Home}/{action=index}/{id?}");
+            });
         }
     }
 }
