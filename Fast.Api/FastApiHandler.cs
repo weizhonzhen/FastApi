@@ -1,15 +1,21 @@
-﻿using Microsoft.AspNetCore.Http;
+using FastUntility.Core.Base;
+using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
 namespace Fast.Api
 {
     public class FastApiHandler
     {
-        public FastApiHandler(RequestDelegate request) { }
+        private readonly RequestDelegate next;
 
-        public async Task InvokeAsync(HttpContext context, IFastApi response)
+        public FastApiHandler(RequestDelegate request) { next = request; }
+
+        public Task InvokeAsync(HttpContext context, IFastApi response)
         {
-            await response.ContentAsync(context).ConfigureAwait(false);
+            if (context.Request.Path.Value.ToStr().Replace("/", "").ToLower() == "homeindex")
+                return next(context);
+            else
+                return response.ContentAsync(context);
         }
     }
 }
