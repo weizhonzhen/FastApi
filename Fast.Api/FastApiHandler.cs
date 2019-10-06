@@ -12,7 +12,8 @@ namespace Fast.Api
 
         public Task InvokeAsync(HttpContext context, IFastApi response)
         {
-            if (context.Request.Path.Value.ToStr().Replace("/", "").ToLower() == "homeindex")
+            var key = context.Request.Path.Value.ToStr().Replace("/", "").ToLower();
+            if (key == "help" || key == "editxml")
                 return next(context);
             else
                 return response.ContentAsync(context);
