@@ -38,7 +38,7 @@ namespace Fast.Api.Web
             {
                 routes.MapRoute(
                 name: "default",
-                template: "{controller=Home}/{action=index}/{id?}");
+                template: "{action=index}/{id?}");
             });
         }
     }
