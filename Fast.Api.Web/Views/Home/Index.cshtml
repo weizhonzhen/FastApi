@@ -11,15 +11,15 @@
             foreach (var item in FastData.Core.FastMap.Api)
             {
                 var name = FastData.Core.FastMap.MapParam(item);
-                <label class="left"><font color="blue">http://@Context.Request.Host/@item</font></label>
+                <label class="left"><font color="blue">http://@Context.Request.Host/@item</font><font color="#e91e63" style="margin-left:20px;">类型：@GetType(item)</font></label>
                 <label class="right" data-id="@item"><font color="green">显示参数</font></label>
-                <table id="@item">
+                <table id="@item" style="background-color:#efefef;margin-bottom:10px;width:99.5%;">
                     @if (name.Count == 1)
                     {
                         <tr>
                             <td width="45%" align="left"><span>@name[0]：</span><input type="text" name="@name[0]" id="@name[0]"/></td>
                             <td width="10%" align="center"><button data-id="@item" data-url="http://@Context.Request.Host/@item" data-result="textarea@(item)">测试</button></td>
-                            <td width="45%" align="left"><textarea cols="50" id="textarea@(item)" rows="5"></textarea></td>
+                            <td width="45%" align="left" valign="bottom"><textarea cols="50" id="textarea@(item)" rows="5"></textarea></td>
                         </tr>
                     }
                     else if (name.Count > 1)
@@ -51,7 +51,7 @@
 </body>
 </html>
 <script>
-    $("div label").click(function () {
+    $("div .right").click(function () {
         var id = $(this).data("id");
         if ($("#" + id).css("display") == "none")
             $("#" + id).show();
@@ -72,9 +72,19 @@
             url: $(this).data("url"),
             data: $("#" + id + " input" ).serialize(),
             success: function (data) {
-                debugger;
                 $("#" + result).val(data);
             }
         });
     });
 </script>
+@functions{
+    public static string GetType(string name)
+    {
+        if (FastData.Core.FastMap.MapType(name).ToLower() == "page")
+            return "分页";
+        else if (FastData.Core.FastMap.MapType(name).ToLower() == "all")
+            return "所有";
+        else
+            return "参数";
+    }
+}
