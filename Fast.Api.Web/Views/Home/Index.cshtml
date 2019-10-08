@@ -17,7 +17,14 @@
                     @if (name.Count == 1)
                     {
                         <tr>
-                            <td width="45%" align="left"><span>@name[0]：</span><input type="text" name="@name[0]" id="@name[0]"/></td>
+                            <td width="45%" align="left">
+                                @if (IsPage(item))
+                                {
+                                    <span>PageId：</span><input type="text" name="PageId" id="PageId" />
+                                    <span>PageSize：</span><input type="text" name="PageSize" id="PageSize" />
+                                }
+                                <span>@name[0]：</span><input type="text" name="@name[0]" id="@name[0]" />
+                            </td>
                             <td width="10%" align="center"><button data-id="@item" data-url="http://@Context.Request.Host/@item" data-result="textarea@(item)">测试</button></td>
                             <td width="45%" align="left" valign="bottom"><textarea cols="50" id="textarea@(item)" rows="5"></textarea></td>
                         </tr>
@@ -30,7 +37,14 @@
                             if (i == 0)
                             {
                                 <tr>
-                                    <td width="45%" align="left"><span>@temp：</span><input type="text" name="@temp" id="@temp"/></td>
+                                    <td width="45%" align="left">
+                                        @if (IsPage(item))
+                                        {
+                                            <span>PageId：</span><input type="text" name="PageId" id="PageId" />
+                                            <span>PageSize：</span><input type="text" name="PageSize" id="PageSize" />
+                                        }
+                                        <span>@temp：</span><input type="text" name="@temp" id="@temp" />
+                                    </td>
                                     <td width="10%" align="center" rowspan="@name.Count"><button data-id="@item" data-result="textarea@(item)" data-url="http://@Context.Request.Host/@item">测试</button></td>
                                     <td width="45%" align="left" rowspan="@name.Count"><textarea cols="50" id="textarea@(item)" rows="5"></textarea></td>
                                 </tr>
@@ -86,5 +100,13 @@
             return "所有";
         else
             return "参数";
+    }
+
+    public static bool IsPage(string name)
+    {
+        if (FastData.Core.FastMap.MapType(name).ToLower() == "page")
+            return true;
+        else
+            return false;
     }
 }
