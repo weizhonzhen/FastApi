@@ -12,7 +12,7 @@ namespace Fast.Api
 
         public Task InvokeAsync(HttpContext context, IFastApi response)
         {
-            var key = context.Request.Path.Value.ToStr().Replace("/", "").ToLower();
+            var key = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
             if (key == "help" || key == "xml" || key == "del")
                 return next(context);
             else
