@@ -23,7 +23,7 @@ namespace Fast.Api
             stopwatch.Start();
 
             context.Response.ContentType = "application/Json";
-            var key = context.Request.Path.Value.ToStr().Replace("/", "").ToUpper();
+            var key = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
 
             if (FastMap.IsExists(key))
             {
@@ -40,7 +40,20 @@ namespace Fast.Api
                         param.Add(tempParam);
                 }
 
-                if (FastMap.MapType(key).ToLower() == "page")
+                if (FastMap.MapType(key).ToLower() == "pageall")
+                {
+                    var pageSize = GetUrlParam(urlParam, "PageSize");
+                    var pageId = GetUrlParam(urlParam, "PageId");
+                    isSuccess = true;
+                    var page = new PageModel();
+
+                    page.PageSize = pageSize.ToInt(0) == 0 ? 10 : pageSize.ToInt(0);
+                    page.PageId = pageId.ToInt(0) == 0 ? 1 : pageId.ToInt(0);
+                    var info = FastMap.QueryPage(page, key, param.ToArray());
+                    dic.Add("data", info.list);
+                    dic.Add("page", info.pModel);
+                }
+                else if (FastMap.MapType(key).ToLower() == "page" && param.Count > 0)
                 {
                     var pageSize = GetUrlParam(urlParam, "PageSize");
                     var pageId = GetUrlParam(urlParam, "PageId");
