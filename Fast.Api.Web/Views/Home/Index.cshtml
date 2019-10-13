@@ -10,6 +10,8 @@
         @{
             foreach (var item in FastData.Core.FastMap.Api)
             {
+                if (GetType(item) == "")
+                { continue; }
                 var name = FastData.Core.FastMap.MapParam(item);
                 <label class="left"><font color="blue">http://@Context.Request.Host/@item</font><font color="#e91e63" style="margin-left:20px;">类型：@GetType(item)</font></label>
                 <label class="right" data-id="@item.Replace("/","")"><font color="green">显示参数</font></label>
@@ -107,6 +109,8 @@
             return "分页所有";
         else if (FastData.Core.FastMap.MapType(name).ToLower() == "all")
             return "所有";
+        else if (FastData.Core.FastMap.MapType(name).ToLower() == "hide")
+            return "";
         else
             return "参数";
     }
