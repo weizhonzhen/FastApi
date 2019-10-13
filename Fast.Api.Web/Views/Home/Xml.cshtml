@@ -47,7 +47,8 @@
             url: "/xml",
             data: { "name": $("#name").val(), "xml": $("textarea").val() },
             success: function (data) {
-                alert(data.msg)
+                alert(data.msg);
+                window.location.reload();
             }
         });
     });
@@ -59,7 +60,8 @@
                 url: "/del",
                 data: { "name": $("#name").val() },
                 success: function (data) {
-                    alert(data.msg)
+                    alert(data.msg);                    
+                    window.location.reload();
                 }
             });
         }      
