@@ -65,14 +65,20 @@
 </body>
 </html>
 <script>
-    $("div .right").click(function () {
-        debugger;
+    $("div .right").click(function () {        
+        $("div input").each(function () {
+            $(this).val("");
+        });
+        $("div textarea").each(function () {
+            $(this).val("");
+        });
+
         var id = $(this).data("id");
         if ($("#" + id).css("display") == "none")
             $("#" + id).show();
-        else
+        else 
             $("#" + id).hide();
-
+        
         $("table").each(function () {
             if ($(this).attr("id") != id)
                 $(this).hide();
