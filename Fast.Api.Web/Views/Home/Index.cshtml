@@ -103,14 +103,16 @@
 @functions{
     public static string GetType(string name)
     {
-        if (FastData.Core.FastMap.MapType(name).ToLower() == "page")
-            return "分页参数";
-        else if (FastData.Core.FastMap.MapType(name).ToLower() == "pageall")
-            return "分页所有";
-        else if (FastData.Core.FastMap.MapType(name).ToLower() == "all")
-            return "所有";
-        else if (FastData.Core.FastMap.MapType(name).ToLower() == "hide")
+        if (FastData.Core.FastMap.MapType(name).ToLower() == Fast.Api.AppConfig.Page)
+            return "选取-分页参数";
+        else if (FastData.Core.FastMap.MapType(name).ToLower() == Fast.Api.AppConfig.PageAll)
+            return "读取-分页所有";
+        else if (FastData.Core.FastMap.MapType(name).ToLower() == Fast.Api.AppConfig.All)
+            return "读取-所有";
+        else if (FastData.Core.FastMap.MapType(name).ToLower() == Fast.Api.AppConfig.Hide)
             return "";
+        else if (FastData.Core.FastMap.MapType(name).ToLower() == Fast.Api.AppConfig.Write)
+            return "写";
         else
             return "参数";
     }
