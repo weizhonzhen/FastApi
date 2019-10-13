@@ -249,6 +249,9 @@ namespace Fast.Api
 
         //写
         public static readonly string Write = "write";
+        
+        //接口界面不显示
+        public static readonly string Hide = "hide";
     }
 
 }
