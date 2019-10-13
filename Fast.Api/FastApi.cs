@@ -7,7 +7,9 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Fast.Api
 {
@@ -15,7 +17,7 @@ namespace Fast.Api
     {
         public async Task ContentAsync(HttpContext context)
         {
-            var urlParam = GetUrlParam(context);
+            var urlParam = HttpUtility.UrlDecode(GetUrlParam(context));
             var isSuccess = true;
             var dic = new Dictionary<string, object>();
             var stopwatch = new Stopwatch();
@@ -34,13 +36,86 @@ namespace Fast.Api
                 {
                     var tempParam = DbProviderFactories.GetFactory(FastMap.MapDb(key)).CreateParameter();
                     tempParam.ParameterName = item;
-                    tempParam.Value = GetUrlParam(urlParam, item);
 
-                    if (tempParam.Value.ToStr() != "")
+                    if (FastMap.MapDate(key, item).ToLower() == "true")
+                    {
+                        if(!BaseRegular.IsDate(GetUrlParam(urlParam, item)))
+                        {
+                            dic.Add("error", string.Format("{0}：{1},不是日期类型", item, GetUrlParam(urlParam, item)));
+                            param.Clear();
+                            break;
+                        }
+                        tempParam.Value = GetUrlParam(urlParam, item).ToDate();
+                        tempParam.DbType = System.Data.DbType.DateTime;
+                    }
+                    else
+                        tempParam.Value = GetUrlParam(urlParam, item);
+
+                    if (FastMap.MapType(key).ToLower() == AppConfig.Write)
+                    {
+                        if (!string.IsNullOrEmpty(FastMap.MapRequired(key, item)))
+                        {
+                            if (!(FastMap.MapRequired(key, item).ToLower() == "true" && !string.IsNullOrEmpty(tempParam.Value.ToStr())))
+                            { 
+                                dic.Add("error", string.Format("{0}不能为空", item));
+                                param.Clear();
+                                break;
+                            }
+                        }
+                    
+                        if (FastMap.MapMaxlength(key, item).ToInt(0) != 0)
+                        {
+                            if (!(FastMap.MapMaxlength(key, item).ToInt(0) >= tempParam.Value.ToStr().Length))
+                            { 
+                                dic.Add("error", string.Format("{0}：{1}，最大长度{2}", item, tempParam.Value, FastMap.MapMaxlength(key, item)));
+                                param.Clear();
+                                break;
+                            }
+                        }
+                        
+                        var existsKey = FastMap.MapExistsMap(key, item);
+                        if (!string.IsNullOrEmpty(existsKey))
+                        {
+                            var existsListParam = new List<DbParameter>();
+                            var existsParam = DbProviderFactories.GetFactory(FastMap.MapDb(existsKey)).CreateParameter();
+                            existsParam.ParameterName = item;
+                            existsParam.Value = GetUrlParam(urlParam, item);
+                            existsListParam.Add(existsParam);
+
+                            var checkData = FastMap.Query(existsKey, existsListParam.ToArray())?.First() ?? new Dictionary<string, object>();
+                            if (checkData.GetValue("count").ToStr().ToInt(0) >= 1)
+                            {
+                                dic.Add("error", string.Format("{0}：{1}已存在", item, tempParam.Value));
+                                param.Clear();
+                                break;
+                            }
+                        }
+
+                        var checkKey = FastMap.MapCheckMap(key, item);
+                        if (!string.IsNullOrEmpty(checkKey))
+                        {
+                            var checkListParam = new List<DbParameter>();
+                            var checkParam = DbProviderFactories.GetFactory(FastMap.MapDb(checkKey)).CreateParameter();
+                            checkParam.ParameterName = item;
+                            checkParam.Value = GetUrlParam(urlParam, item);
+                            checkListParam.Add(checkParam);
+
+                            var checkData = FastMap.Query(existsKey, checkListParam.ToArray())?.First() ?? new Dictionary<string, object>();
+                            if (checkData.GetValue("count").ToStr().ToInt(0) < 1)
+                            {
+                                dic.Add("error", string.Format("{0}：{1}不存在", item, tempParam.Value));
+                                param.Clear();
+                                break;
+                            }
+                        }
+
+                        param.Add(tempParam);
+                    }
+                    else if (tempParam.Value.ToStr() != "")
                         param.Add(tempParam);
                 }
 
-                if (FastMap.MapType(key).ToLower() == "pageall")
+                if (FastMap.MapType(key).ToLower() == AppConfig.PageAll)
                 {
                     var pageSize = GetUrlParam(urlParam, "PageSize");
                     var pageId = GetUrlParam(urlParam, "PageId");
@@ -53,7 +128,7 @@ namespace Fast.Api
                     dic.Add("data", info.list);
                     dic.Add("page", info.pModel);
                 }
-                else if (FastMap.MapType(key).ToLower() == "page" && param.Count > 0)
+                else if (FastMap.MapType(key).ToLower() == AppConfig.Page && param.Count > 0)
                 {
                     var pageSize = GetUrlParam(urlParam, "PageSize");
                     var pageId = GetUrlParam(urlParam, "PageId");
@@ -66,11 +141,22 @@ namespace Fast.Api
                     dic.Add("data", info.list);
                     dic.Add("page", info.pModel);
                 }
-                else if (FastMap.MapType(key).ToLower() == "all")
+                else if (FastMap.MapType(key).ToLower() == AppConfig.All)
                 {
                     isSuccess = true;
                     data = FastMap.Query(key, param.ToArray());
                     dic.Add("data", data);
+                }
+                else if (FastMap.MapType(key).ToLower() == AppConfig.Write && param.Count > 0)
+                {
+                    var result = FastMap.Write(key, param.ToArray());
+                    if (result.IsSuccess)
+                        isSuccess = true;
+                    else
+                    {
+                        isSuccess = false;
+                        dic.Add("error", result.Message);
+                    }
                 }
                 else
                 {
@@ -146,4 +232,23 @@ namespace Fast.Api
         }
         #endregion
     }
+
+    public static class AppConfig
+    {
+        //读 分页参数必须传
+        public static readonly string Page = "page";
+
+        //读 分页参数可以不传
+        public static readonly string PageAll = "pageall";
+
+        //读 必须传参数
+        public static readonly string Param = "param";
+
+        //读 参数可以不传
+        public static readonly string All = "all";
+
+        //写
+        public static readonly string Write = "write";
+    }
+
 }
