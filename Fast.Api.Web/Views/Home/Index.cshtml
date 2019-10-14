@@ -10,7 +10,7 @@
         @{
             foreach (var item in FastData.Core.FastMap.Api)
             {
-                if (GetType(item) == "")
+                if (GetType(item) == "hide")
                 { continue; }
                 var name = FastData.Core.FastMap.MapParam(item);
                 <label class="left"><font color="blue">http://@Context.Request.Host/@item</font><font color="#e91e63" style="margin-left:20px;">类型：@GetType(item)</font></label>
@@ -110,7 +110,7 @@
         else if (FastData.Core.FastMap.MapType(name).ToLower() == Fast.Api.AppConfig.All)
             return "读取-所有";
         else if (FastData.Core.FastMap.MapType(name).ToLower() == Fast.Api.AppConfig.Hide)
-            return "";
+            return "hide";
         else if (FastData.Core.FastMap.MapType(name).ToLower() == Fast.Api.AppConfig.Write)
             return "写";
         else
