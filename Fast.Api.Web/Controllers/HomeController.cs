@@ -75,6 +75,7 @@ namespace Fast.Api.Web.Controllers
                         System.IO.File.WriteAllText(mapPath, json);
                     }
 
+                    FastData.Core.FastMap.InstanceMap();
                     return Json(new { msg = "操作成功" });
                 }
             }
@@ -103,13 +104,18 @@ namespace Fast.Api.Web.Controllers
                 var xmlPath = string.Format("{0}/map/{1}", AppDomain.CurrentDomain.BaseDirectory, name);
                 System.IO.File.Delete(xmlPath);
 
-                var mapPath = string.Format("{0}/map.json", AppDomain.CurrentDomain.BaseDirectory);
-                var dic = new Dictionary<string, object>();
                 var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
-                map.Path.Remove("map/" + name);
-                dic.Add("SqlMap", map);
-                var json = BaseJson.ModelToJson(dic);
-                System.IO.File.WriteAllText(mapPath, json);
+                if (map.Path.Exists(a => a.ToLower() == string.Format("map/{0}", name.ToLower())))
+                {
+                    var mapPath = string.Format("{0}/map.json", AppDomain.CurrentDomain.BaseDirectory);
+                    var dic = new Dictionary<string, object>();
+                    map.Path.Remove("map/" + name);
+                    dic.Add("SqlMap", map);
+                    var json = BaseJson.ModelToJson(dic);
+                    System.IO.File.WriteAllText(mapPath, json);
+
+                    FastData.Core.FastMap.InstanceMap();
+                }               
 
                 return Json(new { msg = "操作成功" });
             }
