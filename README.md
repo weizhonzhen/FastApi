@@ -1,3 +1,5 @@
+![](https://raw.githubusercontent.com/weizhonzhen/FastApi/master/help.jpg)
+![](https://raw.githubusercontent.com/weizhonzhen/FastApi/master/xml.jpg)
 # FastApi 
 动态生成读api，只需配数据库连接及xml文件
 
@@ -91,6 +93,4 @@ app.UseMiddleware<FastApiHandler>();//使用中间件
 接口地址：http://127.0.0.1/home/index
 访问的地址：http://127.0.0.1/testurl?name=aa&id=1
 访问的分页地址：http://127.0.0.1/testurl?name=aa&id=1&pageid=1&pagesize=10
-支持post get 等所有方式请求![](https://raw.githubusercontent.com/weizhonzhen/FastApi/master/help.jpg)
-![](https://raw.githubusercontent.com/weizhonzhen/FastApi/master/xml.jpg)
-
+支持post get 等所有方式请求
