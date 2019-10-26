@@ -1,0 +1,121 @@
+﻿@page
+@model HelpModel
+<h3 style="color:red;text-align:center;">动态生成接口文档(FastApi)</h3>
+<div style="width:85%;margin:0 auto;margin-top:-10px;">
+    @{
+        foreach (var item in FastData.Core.FastMap.Api)
+        {
+            if (GetType(item) == "hide")
+            { continue; }
+            var name = FastData.Core.FastMap.MapParam(item);
+            <label class="left"><font color="blue">http://@HttpContext.Request.Host/@item</font><font color="#e91e63" style="margin-left:20px;">类型：@GetType(item)</font></label>
+            <label class="right" data-id="@item.Replace("/","")"><font color="green">显示参数</font></label>
+            <table id="@item.Replace("/","")" style="background-color:#efefef;margin-bottom:10px;width:99.5%;">
+                @if (name.Count == 1)
+                {
+                    <tr>
+                        <td width="45%" align="left">
+                            @if (IsPage(item))
+                            {
+                                <span>PageId：</span><input type="text" name="PageId" id="PageId" />
+                                <span>PageSize：</span><input type="text" name="PageSize" id="PageSize" />
+                            }
+                            <span>@name[0]：</span><input type="text" name="@name[0]" id="@name[0]" />
+                        </td>
+                        <td width="10%" align="center"><button data-id="@item.Replace("/","")" data-url="http://@HttpContext.Request.Host/@item" data-result="textarea@(item.Replace("/",""))">测试</button></td>
+                        <td width="45%" align="left" valign="bottom"><textarea cols="50" id="textarea@(item.Replace("/",""))" rows="5"></textarea></td>
+                    </tr>
+                }
+                else if (name.Count > 1)
+                {
+                    var i = 0;
+                    foreach (var temp in name)
+                    {
+                        if (i == 0)
+                        {
+                            <tr>
+                                <td width="45%" align="left">
+                                    @if (IsPage(item))
+                                    {
+                                        <span>PageId：</span><input type="text" name="PageId" id="PageId" />
+                                        <span>PageSize：</span><input type="text" name="PageSize" id="PageSize" />
+                                    }
+                                    <span>@temp：</span><input type="text" name="@temp" id="@temp" />
+                                </td>
+                                <td width="10%" align="center" rowspan="@name.Count"><button data-id="@item.Replace("/","")" data-result="textarea@(item.Replace("/",""))" data-url="http://@HttpContext.Request.Host/@item">测试</button></td>
+                                <td width="45%" align="left" rowspan="@name.Count"><textarea cols="50" id="textarea@(item.Replace("/",""))" rows="5"></textarea></td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td width="45%" align="left"><span>@temp：</span><input type="text" name="@temp" id="@temp" /></td>
+                            </tr>
+                        }
+                        i++;
+                    }
+                }
+            </table>
+        }
+    }
+</div>
+
+<script>
+    $("div .right").click(function () {
+        $("div input").each(function () {
+            $(this).val("");
+        });
+        $("div textarea").each(function () {
+            $(this).val("");
+        });
+
+        var id = $(this).data("id");
+        if ($("#" + id).css("display") == "none")
+            $("#" + id).show();
+        else
+            $("#" + id).hide();
+
+        $("table").each(function () {
+            if ($(this).attr("id") != id)
+                $(this).hide();
+        });
+    });
+
+    $("button").click(function () {
+        var id = $(this).data("id");
+        var result = $(this).data("result");
+        $.ajax({
+            type: "POST",
+            url: $(this).data("url"),
+            data: $("#" + id + " input").serialize(),
+            success: function (data) {
+                $("#" + result).val(data);
+            }
+        });
+    });
+</script>
+@functions{
+    public static string GetType(string name)
+    {
+        if (FastData.Core.FastMap.MapType(name).ToLower() == Fast.Api.AppConfig.Page)
+            return "选取-分页参数";
+        else if (FastData.Core.FastMap.MapType(name).ToLower() == Fast.Api.AppConfig.PageAll)
+            return "读取-分页所有";
+        else if (FastData.Core.FastMap.MapType(name).ToLower() == Fast.Api.AppConfig.All)
+            return "读取-所有";
+        else if (FastData.Core.FastMap.MapType(name).ToLower() == Fast.Api.AppConfig.Hide)
+            return "hide";
+        else if (FastData.Core.FastMap.MapType(name).ToLower() == Fast.Api.AppConfig.Write)
+            return "写";
+        else
+            return "参数";
+    }
+
+    public static bool IsPage(string name)
+    {
+        if (FastData.Core.FastMap.MapType(name).ToLower() == "page")
+            return true;
+        else
+            return false;
+    }
+}
