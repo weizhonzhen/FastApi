@@ -1,0 +1,112 @@
+div label {
+    float: left;
+    line-height: 200%;
+    border-bottom: solid 1px blue;
+    margin-bottom: 10px;
+}
+
+.left {
+    text-align: left;
+    width: 88%;
+    padding-left: 20px;
+}
+
+.right {
+    text-align: right;
+    width: 8%;
+    padding-right: 20px;
+    cursor: pointer;
+}
+
+div > label:nth-child(even) {
+    background-color: aliceblue;
+}
+
+div > label:nth-child(odd) {
+    background-color: antiquewhite;
+}
+
+.table > thead > tr:nth-child(odd) {
+    background-color: rgb(243, 244, 245);
+}
+
+.table > thead > tr:nth-child(even) {
+    background-color: rgb(255, 255, 255);
+}
+
+.table > tbody > tr:nth-child(odd) {
+    background-color: rgb(243, 244, 245);
+}
+
+.table > tbody > tr:nth-child(even) {
+    background-color: rgb(255, 255, 255);
+}
+
+table span {
+    display: inline-block;
+    width: 150px;
+    text-align: right;
+    padding-right: 5px;
+}
+
+input[type=text] {
+    height: 30px;
+    width: 300px;
+}
+
+table {
+    display: none;
+    width: 100%;
+    padding-bottom: 10px;
+}
+
+td {
+    line-height: 200%;
+}
+.table{
+    display:inline-block;
+    width:100%;
+}
+
+.table > tbody > tr > td, 
+.table > tbody > tr > th,
+.table > tfoot > tr > td,
+.table > tfoot > tr > th, 
+.table > thead > tr > td, 
+.table > thead > tr > th {
+    padding: 8px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border: 1px solid #ddd;
+    border-bottom:0px;
+    cursor:pointer;
+}
+
+button {
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
