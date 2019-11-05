@@ -20,11 +20,12 @@
     <button id="del">删除</button>
     <button id="save" style="margin-left:20px;">保存</button>
     <br />
-    <textarea rows="30" cols="100" style="line-height:120%;font-size:14px;"></textarea>
+    <textarea rows="30" cols="100" id="code" style="line-height:120%;font-size:14px;"></textarea>
 </div>
 
 <script>
     $(function () {
+        var editor;
         $("table tr").first().click();
     });
 
@@ -34,13 +35,15 @@
         $("table tbody tr:even").not(this).css("background-color", "#f3f4f5");
         $("textarea").val($(this).children().data("value"));
         $("#name").val($(this).children().data("name"));
+        $(".CodeMirror").remove();
+        editor = CodeMirror.fromTextArea(document.getElementById("code"), { mode: "text/xml", lineNumbers: true });
     });
 
     $("#save").click(function () {
         $.ajax({
             type: "POST",
             url: "xml?handler=Xml",
-            data: { "name": $("#name").val(), "xml": $("textarea").val() },
+            data: { "name": $("#name").val(), "xml": editor.getValue() },
             success: function (data) {
                 alert(data.msg);
                 window.location.reload();
