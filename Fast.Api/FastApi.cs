@@ -38,19 +38,10 @@ namespace Fast.Api
                     var existsKey = FastMap.MapExistsMap(key, item);
                     var tempParam = DbProviderFactories.GetFactory(FastMap.MapDb(key)).CreateParameter();
                     tempParam.ParameterName = item;
-
-                    if (FastMap.MapDate(key, item).ToLower() == "true")
-                    {
-                        if (!BaseRegular.IsDate(GetUrlParam(urlParam, item)))
-                        {
-                            dic.Add("error", string.Format("{0}：{1},不是日期类型", item, GetUrlParam(urlParam, item)));
-                            param.Clear();
-                            break;
-                        }
-                        tempParam.Value = GetUrlParam(urlParam, item).ToDate();
-                        tempParam.DbType = System.Data.DbType.DateTime;
-                    }
-                    else if (!string.IsNullOrEmpty(FastMap.MapRequired(key, item)))
+                    tempParam.Value = GetUrlParam(urlParam, item);
+                    param.Add(tempParam);
+                    
+                    if (!string.IsNullOrEmpty(FastMap.MapRequired(key, item)))
                     {
                         if (!(FastMap.MapRequired(key, item).ToLower() == "true" && !string.IsNullOrEmpty(tempParam.Value.ToStr())))
                         {
@@ -59,21 +50,23 @@ namespace Fast.Api
                             break;
                         }
                     }
-                    else if (FastMap.MapMaxlength(key, item).ToInt(0) != 0)
+
+                    if (FastMap.MapMaxlength(key, item).ToInt(0) != 0)
                     {
                         if (!(FastMap.MapMaxlength(key, item).ToInt(0) >= tempParam.Value.ToStr().Length))
                         {
-                            dic.Add("error", string.Format("{0}：{1}，最大长度{2}", item, tempParam.Value, FastMap.MapMaxlength(key, item)));
+                            dic.Add("error", string.Format("{0}：{1}，最大长度{2}", item, tempParam.Value.ToStr(), FastMap.MapMaxlength(key, item)));
                             param.Clear();
                             break;
-                        }
+                        }                        
                     }
-                    else if (!string.IsNullOrEmpty(existsKey))
+
+                    if (!string.IsNullOrEmpty(existsKey))
                     {
                         var existsListParam = new List<DbParameter>();
                         var existsParam = DbProviderFactories.GetFactory(FastMap.MapDb(existsKey)).CreateParameter();
                         existsParam.ParameterName = item;
-                        existsParam.Value = GetUrlParam(urlParam, item);
+                        existsParam.Value = tempParam.Value;
                         existsListParam.Add(existsParam);
 
                         var checkData = FastMap.Query(existsKey, existsListParam.ToArray())?.First() ?? new Dictionary<string, object>();
@@ -84,7 +77,8 @@ namespace Fast.Api
                             break;
                         }
                     }
-                    else if (!string.IsNullOrEmpty(checkKey))
+
+                    if (!string.IsNullOrEmpty(checkKey))
                     {
                         var checkListParam = new List<DbParameter>();
                         var checkParam = DbProviderFactories.GetFactory(FastMap.MapDb(checkKey)).CreateParameter();
@@ -100,15 +94,25 @@ namespace Fast.Api
                             break;
                         }
                     }
-                    else if (GetUrlParam(urlParam, item) != "")
+
+                    if (FastMap.MapDate(key, item).ToLower() == "true")
                     {
-                        tempParam.Value = GetUrlParam(urlParam, item);
-                        param.Add(tempParam);
+                        if (!BaseRegular.IsDate(tempParam.Value.ToStr()))
+                        {
+                            dic.Add("error", string.Format("{0}：{1},不是日期类型", item, tempParam.Value));
+                            param.Clear();
+                            break;
+                        }
+                        tempParam.Value = tempParam.Value.ToDate();
+                        tempParam.DbType = System.Data.DbType.DateTime;
                     }
+
+                    if (tempParam.Value.ToStr() != "")
+                        param.Clear();
                 }
 
-                if (FastMap.MapType(key).ToLower() == AppConfig.PageAll)
-                {
+                if (FastMap.MapType(key).ToLower() == AppConfig.PageAll&&dic.Count==0)
+                {                    
                     var pageSize = GetUrlParam(urlParam, "PageSize");
                     var pageId = GetUrlParam(urlParam, "PageId");
                     isSuccess = true;
@@ -133,7 +137,7 @@ namespace Fast.Api
                     dic.Add("data", info.list);
                     dic.Add("page", info.pModel);
                 }
-                else if (FastMap.MapType(key).ToLower() == AppConfig.All)
+                else if (FastMap.MapType(key).ToLower() == AppConfig.All && dic.Count == 0)
                 {
                     isSuccess = true;
                     data = FastMap.Query(key, param.ToArray());
