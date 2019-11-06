@@ -100,7 +100,7 @@ namespace Fast.Api
                             break;
                         }
                     }
-                    else
+                    else if (GetUrlParam(urlParam, item) != "")
                     {
                         tempParam.Value = GetUrlParam(urlParam, item);
                         param.Add(tempParam);
