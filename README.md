@@ -74,6 +74,9 @@ app.UseMiddleware<FastApiHandler>();//使用中间件
     <dynamic prepend=" where 1=1 ">
       <isPropertyAvailable prepend=" and " property="id">id=:id</isPropertyAvailable>
     </dynamic>
+    <foreach name="data" field="userId"> //子查询 name是子节点的名称，field是父节点字段,多个","分开
+         select ypxh from base_role where userId=:userId
+    </foreach>
   </select>
  </sqlMap>
  db对应db.json中的key
