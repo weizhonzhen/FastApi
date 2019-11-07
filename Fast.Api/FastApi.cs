@@ -107,7 +107,7 @@ namespace Fast.Api
                         tempParam.DbType = System.Data.DbType.DateTime;
                     }
 
-                    if (tempParam.Value.ToStr() != "")
+                    if (tempParam.Value.ToStr() == "")
                         param.Clear();
                 }
 
