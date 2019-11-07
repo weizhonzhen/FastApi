@@ -66,7 +66,9 @@
     });
 
     $("#add").click(function () {
+        $(".CodeMirror").remove();
         $("textarea").val("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<sqlMap>\n\t<select id=\"\" db=\"\" type=\"\">\n\r\t</select>\n</sqlMap>");
         $("#name").val(".xml");
+        editor = CodeMirror.fromTextArea(document.getElementById("code"), { mode: "text/xml", lineNumbers: true });
     });
 </script>
