@@ -46,7 +46,7 @@ namespace Fast.Api
                         if (!(FastMap.MapRequired(key, item).ToLower() == "true" && !string.IsNullOrEmpty(tempParam.Value.ToStr())))
                         {
                             dic.Add("error", string.Format("{0}不能为空", item));
-                            param.Clear();
+                            param.Remove(tempParam);
                             break;
                         }
                     }
@@ -56,7 +56,7 @@ namespace Fast.Api
                         if (!(FastMap.MapMaxlength(key, item).ToInt(0) >= tempParam.Value.ToStr().Length))
                         {
                             dic.Add("error", string.Format("{0}：{1}，最大长度{2}", item, tempParam.Value.ToStr(), FastMap.MapMaxlength(key, item)));
-                            param.Clear();
+                            param.Remove(tempParam);
                             break;
                         }                        
                     }
@@ -73,7 +73,7 @@ namespace Fast.Api
                         if (checkData.GetValue("count").ToStr().ToInt(0) >= 1)
                         {
                             dic.Add("error", string.Format("{0}：{1}已存在", item, tempParam.Value));
-                            param.Clear();
+                            param.Remove(tempParam);
                             break;
                         }
                     }
@@ -90,7 +90,7 @@ namespace Fast.Api
                         if (checkData.GetValue("count").ToStr().ToInt(0) < 1)
                         {
                             dic.Add("error", string.Format("{0}：{1}不存在", item, tempParam.Value));
-                            param.Clear();
+                            param.Remove(tempParam);
                             break;
                         }
                     }
@@ -100,7 +100,7 @@ namespace Fast.Api
                         if (!BaseRegular.IsDate(tempParam.Value.ToStr()))
                         {
                             dic.Add("error", string.Format("{0}：{1},不是日期类型", item, tempParam.Value));
-                            param.Clear();
+                            param.Remove(tempParam);
                             break;
                         }
                         tempParam.Value = tempParam.Value.ToDate();
@@ -108,7 +108,7 @@ namespace Fast.Api
                     }
 
                     if (tempParam.Value.ToStr() == "")
-                        param.Clear();
+                        param.Remove(tempParam);
                 }
 
                 if (FastMap.MapType(key).ToLower() == AppConfig.PageAll&&dic.Count==0)
@@ -155,7 +155,7 @@ namespace Fast.Api
                     }
                 }
                 else
-                {
+                { 
                     if (param.Count > 0)
                     {
                         isSuccess = true;
