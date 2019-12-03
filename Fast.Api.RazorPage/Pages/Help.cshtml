@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model HelpModel
 <h3 style="color:red;text-align:center;">动态生成接口文档(FastApi)</h3>
 <div style="width:85%;margin:0 auto;margin-top:-10px;">
@@ -8,7 +8,7 @@
             if (GetType(item) == "hide")
             { continue; }
             var name = FastData.Core.FastMap.MapParam(item);
-            <label class="left"><font color="blue">http://@HttpContext.Request.Host/@item</font><font color="#e91e63" style="margin-left:20px;">类型：@GetType(item)</font></label>
+            <label class="left"><font color="blue">@GetName(item)</font><font color="#e91e63" style="margin-left:20px;">类型：@GetType(item)</font></label>
             <label class="right" data-id="@item.Replace("/","")"><font color="green">显示参数</font></label>
             <table id="@item.Replace("/","")" style="background-color:#efefef;margin-bottom:10px;width:99.5%;">
                 @if (name.Count == 1)
@@ -20,7 +20,7 @@
                                 <span>PageId：</span><input type="text" name="PageId" id="PageId" />
                                 <span>PageSize：</span><input type="text" name="PageSize" id="PageSize" />
                             }
-                            <span>@name[0]：</span><input type="text" name="@name[0]" id="@name[0]" />
+                            <span>@name[0]：</span><input type="text" name="@name[0]" id="@name[0]" placeholder="@FastData.Core.FastMap.MapParamRemark(item, name[0])"/>
                         </td>
                         <td width="10%" align="center"><button data-id="@item.Replace("/","")" data-url="http://@HttpContext.Request.Host/@item" data-result="textarea@(item.Replace("/",""))">测试</button></td>
                         <td width="45%" align="left" valign="bottom"><textarea cols="50" id="textarea@(item.Replace("/",""))" rows="5"></textarea></td>
@@ -40,7 +40,7 @@
                                         <span>PageId：</span><input type="text" name="PageId" id="PageId" />
                                         <span>PageSize：</span><input type="text" name="PageSize" id="PageSize" />
                                     }
-                                    <span>@temp：</span><input type="text" name="@temp" id="@temp" />
+                                    <span>@temp：</span><input type="text" name="@temp" id="@temp" placeholder="@FastData.Core.FastMap.MapParamRemark(item, temp)"/>
                                 </td>
                                 <td width="10%" align="center" rowspan="@name.Count"><button data-id="@item.Replace("/","")" data-result="textarea@(item.Replace("/",""))" data-url="http://@HttpContext.Request.Host/@item">测试</button></td>
                                 <td width="45%" align="left" rowspan="@name.Count"><textarea cols="50" id="textarea@(item.Replace("/",""))" rows="5"></textarea></td>
@@ -49,7 +49,7 @@
                         else
                         {
                             <tr>
-                                <td width="45%" align="left"><span>@temp：</span><input type="text" name="@temp" id="@temp" /></td>
+                                <td width="45%" align="left"><span>@temp：</span><input type="text" name="@temp" id="@temp" placeholder="@FastData.Core.FastMap.MapParamRemark(item, temp)"/></td>
                             </tr>
                         }
                         i++;
@@ -117,5 +117,13 @@
             return true;
         else
             return false;
+    }
+
+    public static string GetName(string name)
+    {
+        if (string.IsNullOrEmpty(FastData.Core.FastMap.MapRemark(name)))
+            return name;
+        else
+            return string.Format("{0}({1})", name, FastData.Core.FastMap.MapRemark(name));
     }
 }
