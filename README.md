@@ -93,7 +93,8 @@ app.UseMiddleware<FastApiHandler>();//使用中间件
 	existsmap 是验证是否已经存在 不存在是通过验证
 	checkmap 是验证是否存在，存在通过验证
 	
-接口地址：http://127.0.0.1/home/index
+查看所有接口地址：http://127.0.0.1/help
+配置接口地址：http://127.0.0.1/xml
 访问的地址：http://127.0.0.1/testurl?name=aa&id=1
 访问的分页地址：http://127.0.0.1/testurl?name=aa&id=1&pageid=1&pagesize=10
 支持post get 等所有方式请求
