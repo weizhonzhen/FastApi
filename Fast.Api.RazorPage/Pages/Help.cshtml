@@ -3,14 +3,22 @@
 <h3 style="color:red;text-align:center;">动态生成接口文档(FastApi)</h3>
 <div style="width:85%;margin:0 auto;margin-top:-10px;">
     @{
-        foreach (var item in FastData.Core.FastMap.Api)
+        foreach (var map in FastData.Core.FastMap.Api)
         {
-            if (GetType(item) == "hide")
+            var apiList = (map.Value as List<string>) ?? new List<string>();
+            if (apiList.Count == 0)
             { continue; }
-            var name = FastData.Core.FastMap.MapParam(item);
-            <label class="left"><font color="blue">@GetName(item)</font><font color="#e91e63" style="margin-left:20px;">类型：@GetType(item)</font></label>
-            <label class="right" data-id="@item.Replace("/","")"><font color="green">显示参数</font></label>
-            <table id="@item.Replace("/","")" style="background-color:#efefef;margin-bottom:10px;width:99.5%;">
+
+            <label class="title" style="width:100%;cursor:pointer;padding-left:10px;color:green;" data-id="map_@(map.Key)">@map.Key</label>
+            <label id="map_@(map.Key)" style="display:none;width:100%;">
+            @foreach (var item in apiList)
+            {
+                if (GetType(item) == "hide")
+                { continue; }
+                var name = FastData.Core.FastMap.MapParam(item);
+                <label class="left"><font color="blue">@GetName(item)</font><font color="#e91e63" style="margin-left:20px;">类型：@GetType(item)</font></label>
+                <label class="right" data-id="@item.Replace("/", "")"><font color="green">显示参数</font></label>
+                <table id="@item.Replace("/", "")" style="background-color:#efefef;margin-bottom:10px;width:99.5%;">
                 @if (name.Count == 1)
                 {
                     <tr>
@@ -22,8 +30,8 @@
                             }
                             <span>@name[0]：</span><input type="text" name="@name[0]" id="@name[0]" placeholder="@FastData.Core.FastMap.MapParamRemark(item, name[0])"/>
                         </td>
-                        <td width="10%" align="center"><button data-id="@item.Replace("/","")" data-url="http://@HttpContext.Request.Host/@item" data-result="textarea@(item.Replace("/",""))">测试</button></td>
-                        <td width="45%" align="left" valign="bottom"><textarea cols="50" id="textarea@(item.Replace("/",""))" rows="5"></textarea></td>
+                        <td width="10%" align="center"><button data-id="@item.Replace("/", "")" data-url="http://@HttpContext.Request.Host/@item" data-result="textarea@(item.Replace("/", ""))">测试</button></td>
+                        <td width="45%" align="left" valign="bottom"><textarea cols="50" id="textarea@(item.Replace("/", ""))" rows="5"></textarea></td>
                     </tr>
                 }
                 else if (name.Count > 1)
@@ -42,8 +50,8 @@
                                     }
                                     <span>@temp：</span><input type="text" name="@temp" id="@temp" placeholder="@FastData.Core.FastMap.MapParamRemark(item, temp)"/>
                                 </td>
-                                <td width="10%" align="center" rowspan="@name.Count"><button data-id="@item.Replace("/","")" data-result="textarea@(item.Replace("/",""))" data-url="http://@HttpContext.Request.Host/@item">测试</button></td>
-                                <td width="45%" align="left" rowspan="@name.Count"><textarea cols="50" id="textarea@(item.Replace("/",""))" rows="5"></textarea></td>
+                                <td width="10%" align="center" rowspan="@name.Count"><button data-id="@item.Replace("/", "")" data-result="textarea@(item.Replace("/", ""))" data-url="http://@HttpContext.Request.Host/@item">测试</button></td>
+                                <td width="45%" align="left" rowspan="@name.Count"><textarea cols="50" id="textarea@(item.Replace("/", ""))" rows="5"></textarea></td>
                             </tr>
                         }
                         else
@@ -56,11 +64,26 @@
                     }
                 }
             </table>
+            }
+            </label>
         }
-    }
+      }
 </div>
 
 <script>
+    $("div .title").click(function () {
+        var id = $(this).data("id");
+        if ($("#" + id).css("display") == "none")
+            $("#" + id).show();
+        else
+            $("#" + id).hide();
+
+        $("div .title").each(function () {
+            if ($(this).data("id") != id)
+                $("#" + $(this).data("id")).hide();
+        });
+    });
+
     $("div .right").click(function () {
         $("div input").each(function () {
             $(this).val("");
