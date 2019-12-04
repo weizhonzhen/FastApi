@@ -1,4 +1,4 @@
-﻿using FastUntility.Core.Base;
+using FastUntility.Core.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
@@ -17,9 +17,8 @@ namespace Fast.Api.RazorPage.Pages
 
             foreach (var item in xml.Path)
             {
-                var path = string.Format("{0}/{1}", AppDomain.CurrentDomain.BaseDirectory, item);
-                if (System.IO.File.Exists(path))
-                    Map.Add(item, System.IO.File.ReadAllText(path));
+                if (System.IO.File.Exists(item))
+                    Map.Add(item, System.IO.File.ReadAllText(item));
             }
         }
 
@@ -32,7 +31,7 @@ namespace Fast.Api.RazorPage.Pages
                     result.Add("msg", "xml文件名填写不正确");
                 else
                 {
-                    var xmlPath = string.Format("{0}/map/{1}", AppDomain.CurrentDomain.BaseDirectory, item.name);
+                    var xmlPath = string.Format("map/{0}", item.name);
                     using (var xmlWrite = System.IO.File.Create(xmlPath))
                     {
                         xmlWrite.Write(Encoding.Default.GetBytes(item.xml));
@@ -42,12 +41,11 @@ namespace Fast.Api.RazorPage.Pages
 
                     if (!map.Path.Exists(a => a.ToLower() == string.Format("map/{0}", item.name.ToLower())))
                     {
-                        var mapPath = string.Format("{0}/map.json", AppDomain.CurrentDomain.BaseDirectory);
                         var dic = new Dictionary<string, object>();
                         map.Path.Add(string.Format("map/{0}", item.name));
                         dic.Add("SqlMap", map);
                         var json = BaseJson.ModelToJson(dic);
-                        System.IO.File.WriteAllText(mapPath, json);
+                        System.IO.File.WriteAllText("map.json", json);
                     }
 
                     FastData.Core.FastMap.InstanceMap();
@@ -70,18 +68,17 @@ namespace Fast.Api.RazorPage.Pages
                 result.Add("msg", "xml文件名填写不正确");
             else
             {
-                var xmlPath = string.Format("{0}/map/{1}", AppDomain.CurrentDomain.BaseDirectory, item.name);
+                var xmlPath = string.Format("map/{0}", item.name);
                 System.IO.File.Delete(xmlPath);
 
                 var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
                 if (map.Path.Exists(a => a.ToLower() == string.Format("map/{0}", item.name.ToLower())))
                 {
-                    var mapPath = string.Format("{0}/map.json", AppDomain.CurrentDomain.BaseDirectory);
                     var dic = new Dictionary<string, object>();
                     map.Path.Remove("map/" + item.name);
                     dic.Add("SqlMap", map);
                     var json = BaseJson.ModelToJson(dic);
-                    System.IO.File.WriteAllText(mapPath, json);
+                    System.IO.File.WriteAllText("map.json", json);
 
                     FastData.Core.FastMap.InstanceMap();
                 }
