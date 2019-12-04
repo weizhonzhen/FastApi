@@ -49,22 +49,22 @@ app.UseMiddleware<FastApiHandler>();//使用中间件
 ```csharp
 <?xml version="1.0" encoding="utf-8" ?>
 <sqlMap>
-   <select id="testurl" db="Api" type="param">
+   <select id="testurl" db="Api" type="param" name="备注">
     select * from table a
     <dynamic prepend=" where 1=1 ">
-      <isNotNullOrEmpty prepend=" and " property="name">a.name = :name</isNotNullOrEmpty>      
-      <isNotNullOrEmpty prepend=" and " property="id">a.id = :id</isNotNullOrEmpty>
+      <isNotNullOrEmpty prepend=" and " property="name" name="备注">a.name = :name</isNotNullOrEmpty>      
+      <isNotNullOrEmpty prepend=" and " property="id" name="备注">a.id = :id</isNotNullOrEmpty>
     </dynamic>
  </select>
  
-  <insert id="Write/Test" db="Api" type="write">
+  <insert id="Write/Test" db="Api" type="write" name="备注">
     insert into aa values (
     <dynamic prepend="">
-      <isPropertyAvailable prepend="" property="id" existsmap="CheckTestId">:id,</isPropertyAvailable>
-      <isPropertyAvailable prepend="" property="addTime" date="true" required="true">:addTime,</isPropertyAvailable>
-      <isPropertyAvailable prepend="" property="key">:key,</isPropertyAvailable>
-      <isPropertyAvailable prepend="" property="a" date="true" required="true">:a,</isPropertyAvailable>
-      <isPropertyAvailable prepend="" property="b" maxlength="10">:b</isPropertyAvailable>
+      <isPropertyAvailable prepend="" property="id" existsmap="CheckTestId" name="备注">:id,</isPropertyAvailable>
+      <isPropertyAvailable prepend="" property="addTime" date="true" required="true" name="备注">:addTime,</isPropertyAvailable>
+      <isPropertyAvailable prepend="" property="key" name="备注">:key,</isPropertyAvailable>
+      <isPropertyAvailable prepend="" property="a" date="true" required="true" name="备注">:a,</isPropertyAvailable>
+      <isPropertyAvailable prepend="" property="b" maxlength="10" name="备注">:b</isPropertyAvailable>
     </dynamic>
     )
   </insert>
