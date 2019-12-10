@@ -22,8 +22,8 @@
                         { continue; }
                         var name = FastData.Core.FastMap.MapParam(item);
                         <label class="left"><font color="blue">@GetName(item)</font><font color="#e91e63" style="margin-left:20px;">类型：@GetType(item)</font></label>
-                        <label class="right" data-id="@(map.Key + item)"><font color="green">显示参数</font></label>
-                        <table id="@item" style="background-color:#efefef;margin-bottom:10px;width:99.5%;">
+                        <label class="right" data-id="@(map.Key+item)"><font color="green">显示参数</font></label>
+                        <table id="@(map.Key+item)" style="background-color:#efefef;margin-bottom:10px;width:99.5%;">
                             @if (name.Count == 1)
                             {
                                 <tr>
