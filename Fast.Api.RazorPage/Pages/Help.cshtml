@@ -17,8 +17,8 @@
                 { continue; }
                 var name = FastData.Core.FastMap.MapParam(item);
                 <label class="left"><font color="blue">@GetName(item)</font><font color="#e91e63" style="margin-left:20px;">类型：@GetType(item)</font></label>
-                <label class="right" data-id="@item.Replace("/", "")"><font color="green">显示参数</font></label>
-                <table id="@item.Replace("/", "")" style="background-color:#efefef;margin-bottom:10px;width:99.5%;">
+                <label class="right" data-id="@(map+item)"><font color="green">显示参数</font></label>
+                <table id="@item" style="background-color:#efefef;margin-bottom:10px;width:99.5%;">
                 @if (name.Count == 1)
                 {
                     <tr>
@@ -30,8 +30,8 @@
                             }
                             <span>@name[0]：</span><input type="text" name="@name[0]" id="@name[0]" placeholder="@FastData.Core.FastMap.MapParamRemark(item, name[0])"/>
                         </td>
-                        <td width="10%" align="center"><button data-id="@item.Replace("/", "")" data-url="http://@HttpContext.Request.Host/@item" data-result="textarea@(item.Replace("/", ""))">测试</button></td>
-                        <td width="45%" align="left" valign="bottom"><textarea cols="50" id="textarea@(item.Replace("/", ""))" rows="5"></textarea></td>
+                        <td width="10%" align="center"><button data-id="@item" data-url="http://@HttpContext.Request.Host/@item" data-result="textarea@(item)">测试</button></td>
+                        <td width="45%" align="left" valign="bottom"><textarea cols="50" id="textarea@(item)" rows="5"></textarea></td>
                     </tr>
                 }
                 else if (name.Count > 1)
@@ -50,8 +50,8 @@
                                     }
                                     <span>@temp：</span><input type="text" name="@temp" id="@temp" placeholder="@FastData.Core.FastMap.MapParamRemark(item, temp)"/>
                                 </td>
-                                <td width="10%" align="center" rowspan="@name.Count"><button data-id="@item.Replace("/", "")" data-result="textarea@(item.Replace("/", ""))" data-url="http://@HttpContext.Request.Host/@item">测试</button></td>
-                                <td width="45%" align="left" rowspan="@name.Count"><textarea cols="50" id="textarea@(item.Replace("/", ""))" rows="5"></textarea></td>
+                                <td width="10%" align="center" rowspan="@name.Count"><button data-id="@item" data-result="textarea@(item)" data-url="http://@HttpContext.Request.Host/@item">测试</button></td>
+                                <td width="45%" align="left" rowspan="@name.Count"><textarea cols="50" id="textarea@(item)" rows="5"></textarea></td>
                             </tr>
                         }
                         else
