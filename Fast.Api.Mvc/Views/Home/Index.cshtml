@@ -115,6 +115,7 @@
         var result = $(this).data("result");
         $.ajax({
             type: "POST",
+            timeout: 1000 * 60,
             url: $(this).data("url"),
             data: $("#" + id + " input" ).serialize(),
             success: function (data) {
