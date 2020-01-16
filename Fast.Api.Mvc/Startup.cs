@@ -1,8 +1,10 @@
-﻿using FastData.Core;
+using FastData.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 
 namespace Fast.Api.Mvc
 {
@@ -13,6 +15,7 @@ namespace Fast.Api.Mvc
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Encoding encoding = Encoding.GetEncoding("GB2312");
 
+            services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
             services.AddResponseCompression();
 
             services.AddTransient<IFastApi, FastApi>();
