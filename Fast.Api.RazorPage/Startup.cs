@@ -47,6 +47,21 @@ namespace Fast.Api.RazorPage
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseExceptionHandler(error =>
+            {
+                error.Use(async (context, next) =>
+                {
+                    var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+                    if (contextFeature != null)
+                    {
+                        BaseLog.SaveLog(contextFeature.Error.Message, "error");
+                        context.Response.ContentType = "application/json";
+                        context.Response.StatusCode = 404;
+                        await context.Response.WriteAsync(contextFeature.Error.Message);
+                    }
+                });
+            });
+            
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
