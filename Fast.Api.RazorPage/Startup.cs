@@ -1,7 +1,9 @@
 using System.Text;
 using Fast.Api.RazorPage.Filter;
 using FastData.Core;
+using FastUntility.Core.Base;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +44,10 @@ namespace Fast.Api.RazorPage
             FastMap.InstanceMap();
 
             services.AddMvc(options=> { options.Filters.Add(new CheckFilter()); }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-            .AddRazorPagesOptions(o => { o.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute()); });
+            .AddRazorPagesOptions(o => { 
+                o.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute());
+                o.RootDirectory = "/Pages";
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -61,7 +66,7 @@ namespace Fast.Api.RazorPage
                     }
                 });
             });
-            
+
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
