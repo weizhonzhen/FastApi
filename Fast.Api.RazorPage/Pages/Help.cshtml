@@ -25,10 +25,10 @@
                         <td width="45%" align="left">
                             @if (IsPage(item))
                             {
-                                <span>PageId：</span><input type="text" name="PageId" id="PageId" />
-                                <span>PageSize：</span><input type="text" name="PageSize" id="PageSize" />
+                                <div><span>PageId：</span><input type="text" name="PageId" id="PageId" /></div>
+                                <div><span>PageSize：</span><input type="text" name="PageSize" id="PageSize" /></div>
                             }
-                            <span>@name[0]：</span><input type="text" name="@name[0]" id="@name[0]" placeholder="@FastData.Core.FastMap.MapParamRemark(item, name[0])"/>
+                            <div><span>@name[0]：</span><input type="text" name="@name[0]" id="@name[0]" placeholder="@FastData.Core.FastMap.MapParamRemark(item, name[0])" /></div>
                         </td>
                         <td width="10%" align="center"><button data-id="@item" data-url="http://@HttpContext.Request.Host/@item" data-result="textarea@(item)">测试</button></td>
                         <td width="45%" align="left" valign="bottom"><textarea cols="50" id="textarea@(item)" rows="5"></textarea></td>
