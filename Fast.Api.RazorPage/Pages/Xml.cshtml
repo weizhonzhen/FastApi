@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model XmlModel
 
 <h3 style="color:red;text-align:center;">动态生成接口文档(FastApi)</h3>
@@ -46,7 +46,8 @@
             data: { "name": $("#name").val(), "xml": editor.getValue() },
             success: function (data) {
                 alert(data.msg);
-                window.location.reload();
+                if (data.Issuccess)
+                    window.location.reload();
             }
         });
     });
@@ -67,6 +68,7 @@
 
     $("#add").click(function () {
         $(".CodeMirror").remove();
+        $("textarea").show();
         $("textarea").val("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<sqlMap>\n\t<select id=\"\" db=\"\" type=\"\">\n\r\t</select>\n</sqlMap>");
         $("#name").val(".xml");
         editor = CodeMirror.fromTextArea(document.getElementById("code"), { mode: "text/xml", lineNumbers: true });
