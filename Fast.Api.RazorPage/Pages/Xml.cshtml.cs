@@ -28,7 +28,10 @@ namespace Fast.Api.RazorPage.Pages
             try
             {
                 if (string.IsNullOrEmpty(item.name.ToLower().Replace(".xml", "")))
+                {
                     result.Add("msg", "xml文件名填写不正确");
+                    result.Add("Issuccess", false);
+                }
                 else
                 {
                     var xmlPath = string.Format("map/{0}", item.name);
@@ -37,19 +40,28 @@ namespace Fast.Api.RazorPage.Pages
                         xmlWrite.Write(Encoding.Default.GetBytes(item.xml));
                     }
 
-                    var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
-
-                    if (!map.Path.Exists(a => a.ToLower() == string.Format("map/{0}", item.name.ToLower())))
+                    if (FastData.Core.FastMap.CheckMap(xmlPath))
                     {
-                        var dic = new Dictionary<string, object>();
-                        map.Path.Add(string.Format("map/{0}", item.name));
-                        dic.Add("SqlMap", map);
-                        var json = BaseJson.ModelToJson(dic);
-                        System.IO.File.WriteAllText("map.json", json);
-                    }
+                        var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
 
-                    FastData.Core.FastMap.InstanceMap();
-                    result.Add("msg", "操作成功");
+                        if (!map.Path.Exists(a => a.ToLower() == string.Format("map/{0}", item.name.ToLower())))
+                        {
+                            var dic = new Dictionary<string, object>();
+                            map.Path.Add(string.Format("map/{0}", item.name));
+                            dic.Add("SqlMap", map);
+                            var json = BaseJson.ModelToJson(dic);
+                            System.IO.File.WriteAllText("map.json", json);
+                        }
+
+                        FastData.Core.FastMap.InstanceMap();
+                        result.Add("msg", "操作成功");
+                        result.Add("Issuccess", true);
+                    }
+                    else
+                    {
+                        result.Add("msg", "操作失败");
+                        result.Add("Issuccess", false);
+                    }
                 }
                 return new JsonResult(result);
             }
@@ -57,6 +69,7 @@ namespace Fast.Api.RazorPage.Pages
             {
                 BaseLog.SaveLog(ex.StackTrace, "xml");
                 result.Add("msg", ex.Message);
+                result.Add("Issuccess", false);
                 return new JsonResult(result);
             }
         }
