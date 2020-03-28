@@ -52,9 +52,9 @@ namespace Fast.Api.Mvc.Controllers
             try
             {
                 if (string.IsNullOrEmpty(xml) || string.IsNullOrEmpty(name))
-                    return Json(new { msg = "xml或文件名不能为空" });
+                    return Json(new { msg = "xml或文件名不能为空", Issuccess = false });
                 else if (string.IsNullOrEmpty(name.ToLower().Replace(".xml", "")))
-                    return Json(new { msg = "xml文件名填写不正确" });
+                    return Json(new { msg = "xml文件名填写不正确", Issuccess = false });
                 else
                 {
                     var xmlPath = string.Format("map/{0}",  name);
@@ -63,27 +63,30 @@ namespace Fast.Api.Mvc.Controllers
                         xmlWrite.Write(Encoding.Default.GetBytes(xml));
                     }
 
-                    var info = new System.IO.FileInfo(xmlPath);
-
-                    var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
-
-                    if (!map.Path.Exists(a => a.ToLower() == string.Format("map/{0}", name.ToLower())))
+                    if (FastData.Core.FastMap.CheckMap(xmlPath))
                     {
-                        var dic = new Dictionary<string, object>();
-                        map.Path.Add(string.Format("map/{0}", name));
-                        dic.Add("SqlMap", map);
-                        var json = BaseJson.ModelToJson(dic);
-                        System.IO.File.WriteAllText("map.json", json);
-                    }
+                        var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
 
-                    FastData.Core.FastMap.InstanceMap();
-                    return Json(new { msg = "操作成功" });
+                        if (!map.Path.Exists(a => a.ToLower() == string.Format("map/{0}", name.ToLower())))
+                        {
+                            var dic = new Dictionary<string, object>();
+                            map.Path.Add(string.Format("map/{0}", name));
+                            dic.Add("SqlMap", map);
+                            var json = BaseJson.ModelToJson(dic);
+                            System.IO.File.WriteAllText("map.json", json);
+                        }
+
+                        FastData.Core.FastMap.InstanceMap();
+                        return Json(new { msg = "操作成功", Issuccess = true });
+                    }
+                    else
+                        return Json(new { msg = "操作失败", Issuccess = false });
                 }
             }
             catch (Exception ex)
             {
                 BaseLog.SaveLog(ex.StackTrace, "xml");
-                return Json(new { msg = ex.Message });
+                return Json(new { msg = ex.Message, Issuccess = false });
             }
         }
 
