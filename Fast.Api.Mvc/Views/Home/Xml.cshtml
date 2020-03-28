@@ -1,4 +1,4 @@
-﻿@model System.Collections.Generic.Dictionary<string,object>
+@model System.Collections.Generic.Dictionary<string,object>
 <html>
 <head>
     <script src="/Scripts/jquery-min.js"></script>
@@ -67,7 +67,8 @@
                 data: { "name": $("#name").val() },
                 success: function (data) {
                     alert(data.msg);
-                    window.location.reload();
+                    if (data.Issuccess)
+                        window.location.reload();
                 }
             });
         }      
