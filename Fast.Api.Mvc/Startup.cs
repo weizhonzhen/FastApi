@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using System.Collections.Generic;
 
 namespace Fast.Api.Mvc
 {
@@ -43,9 +44,12 @@ namespace Fast.Api.Mvc
                     if (contextFeature != null)
                     {
                         BaseLog.SaveLog(contextFeature.Error.Message, "error");
-                        context.Response.ContentType = "application/json";
-                        context.Response.StatusCode = 404;
-                        await context.Response.WriteAsync(contextFeature.Error.Message);
+                        context.Response.ContentType = "application/json;charset=utf-8";
+                        context.Response.StatusCode = 200;
+                        var result = new Dictionary<string, object>();
+                        result.Add("success", false);
+                        result.Add("msg", contextFeature.Error.Message);
+                        await context.Response.WriteAsync(BaseJson.ModelToJson(result));
                     }
                 });
             });
