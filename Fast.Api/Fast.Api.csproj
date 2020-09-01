@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fast.Data.Core" Version="2.0.9" />
+    <PackageReference Include="Fast.Data.Core" Version="2.1.8.5" />
   </ItemGroup>
 
 </Project>
