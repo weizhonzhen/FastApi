@@ -1,6 +1,7 @@
 ﻿using FastUntility.Core.Base;
 using FastUntility.Core.Cache;
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
@@ -51,13 +52,21 @@ namespace Fast.Api
         /// <returns></returns>
         private static ConfigModel GetConfig(string key = null)
         {
-            var item = new ConfigModel();
-            if (key != null)
-                item = BaseConfig.GetListValue<ConfigModel>("DataConfig", "db.json").Find(a => a.Key.ToLower() == key.ToLower());
+            var list = new List<ConfigModel>();
+            var cacheKey = key == null ? "FastApi.Config" : string.Format("FastApi.Config.{0}", key);
+            
+            if (BaseCache.Exists(cacheKey))
+                list = BaseCache.Get<List<ConfigModel>>( cacheKey);
             else
-                item = BaseConfig.GetListValue<ConfigModel>("DataConfig", "db.json")[0] ?? new ConfigModel();
+            {
+                list = BaseConfig.GetListValue<ConfigModel>("DataConfig", "db.json");
+                BaseCache.Set<List<ConfigModel>>(cacheKey, list);
+            }
 
-            return item;
+            if (string.IsNullOrEmpty(key))
+                return list[0];
+            else
+                return list.Find(a => a.Key.ToLower() == key.ToLower());
         }
     }
 }
