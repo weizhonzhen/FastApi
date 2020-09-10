@@ -9,7 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fast.Data.Core" Version="2.1.8.5" />
+    <PackageReference Include="Fast.Untility.Core" Version="1.3.7.2" />
+    <PackageReference Include="Fast.Data.Core" Version="2.1.8.6" />
+    <PackageReference Include="Fast.Redis.Core" Version="1.1.5.2" />
   </ItemGroup>
 
 </Project>
