@@ -5,7 +5,12 @@
 
 1、ConfigureServices
 ```csharp
-services.AddTransient<IFastApi, FastApi>();//注入
+services.AddTransient<IFastApi, FastApi>();
+services.AddTransient<IFastApi, FastApi>();
+services.AddSingleton<IRedisRepository, RedisRepository>();
+services.AddTransient<IFastRepository, FastRepository>();
+ServiceContext.Init(new ServiceEngine(services.BuildServiceProvider()));
+
 FastMap.InstanceMap();//读取xml
 ```
 
