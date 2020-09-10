@@ -26,25 +26,25 @@ namespace Fast.Api
             stopwatch.Start();
 
             context.Response.ContentType = "application/Json";
-            var key = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
+            var name = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
 
-            if (FastMap.IsExists(key))
+            if (FastMap.IsExists(name))
             {
                 var data = new List<Dictionary<string, object>>();
                 var param = new List<DbParameter>();
 
-                foreach (var item in FastMap.MapParam(key))
+                foreach (var item in IFast.MapParam(name))
                 {                    
-                    var checkKey = FastMap.MapCheckMap(key, item);
-                    var existsKey = FastMap.MapExistsMap(key, item);
-                    var tempParam = DbProviderFactories.GetFactory(FastMap.MapDb(key)).CreateParameter();
+                    var checkKey = FastMap.MapCheckMap(name, item);
+                    var existsKey = FastMap.MapExistsMap(name, item);
+                    var tempParam = DbProviderFactories.GetFactory(IFast.MapDb(name)).CreateParameter();
                     tempParam.ParameterName = item;
                     tempParam.Value = GetUrlParam(urlParam, item);
                     param.Add(tempParam);
                     
-                    if (!string.IsNullOrEmpty(FastMap.MapRequired(key, item)))
+                    if (!string.IsNullOrEmpty(FastMap.MapRequired(name, item)))
                     {
-                        if (!(FastMap.MapRequired(key, item).ToLower() == "true" && !string.IsNullOrEmpty(tempParam.Value.ToStr())))
+                        if (!(FastMap.MapRequired(name, item).ToLower() == "true" && !string.IsNullOrEmpty(tempParam.Value.ToStr())))
                         {
                             dic.Add("error", string.Format("{0}不能为空", item));
                             param.Remove(tempParam);
@@ -52,11 +52,11 @@ namespace Fast.Api
                         }
                     }
 
-                    if (FastMap.MapMaxlength(key, item).ToInt(0) != 0)
+                    if (FastMap.MapMaxlength(name, item).ToInt(0) != 0)
                     {
-                        if (!(FastMap.MapMaxlength(key, item).ToInt(0) >= tempParam.Value.ToStr().Length))
+                        if (!(FastMap.MapMaxlength(name, item).ToInt(0) >= tempParam.Value.ToStr().Length))
                         {
-                            dic.Add("error", string.Format("{0}：{1}，最大长度{2}", item, tempParam.Value.ToStr(), FastMap.MapMaxlength(key, item)));
+                            dic.Add("error", string.Format("{0}：{1}，最大长度{2}", item, tempParam.Value.ToStr(), FastMap.MapMaxlength(name, item)));
                             param.Remove(tempParam);
                             break;
                         }                        
@@ -65,7 +65,7 @@ namespace Fast.Api
                     if (!string.IsNullOrEmpty(existsKey))
                     {
                         var existsListParam = new List<DbParameter>();
-                        var existsParam = DbProviderFactories.GetFactory(FastMap.MapDb(existsKey)).CreateParameter();
+                        var existsParam = DbProviderFactories.GetFactory(IFast.MapDb(existsKey)).CreateParameter();
                         existsParam.ParameterName = item;
                         existsParam.Value = tempParam.Value;
                         existsListParam.Add(existsParam);
@@ -82,7 +82,7 @@ namespace Fast.Api
                     if (!string.IsNullOrEmpty(checkKey))
                     {
                         var checkListParam = new List<DbParameter>();
-                        var checkParam = DbProviderFactories.GetFactory(FastMap.MapDb(checkKey)).CreateParameter();
+                        var checkParam = DbProviderFactories.GetFactory(IFast.MapDb(checkKey)).CreateParameter();
                         checkParam.ParameterName = item;
                         checkParam.Value = GetUrlParam(urlParam, item);
                         checkListParam.Add(checkParam);
@@ -96,7 +96,7 @@ namespace Fast.Api
                         }
                     }
 
-                    if (FastMap.MapDate(key, item).ToLower() == "true")
+                    if (FastMap.MapDate(name, item).ToLower() == "true")
                     {
                         if (!BaseRegular.IsDate(tempParam.Value.ToStr()))
                         {
@@ -112,7 +112,7 @@ namespace Fast.Api
                         param.Remove(tempParam);
                 }
 
-                if (FastMap.MapType(key).ToLower() == AppConfig.PageAll&&dic.Count==0)
+                if (FastMap.MapType(name).ToLower() == AppConfig.PageAll&&dic.Count==0)
                 {                    
                     var pageSize = GetUrlParam(urlParam, "PageSize");
                     var pageId = GetUrlParam(urlParam, "PageId");
@@ -121,11 +121,11 @@ namespace Fast.Api
 
                     page.PageSize = pageSize.ToInt(0) == 0 ? 10 : pageSize.ToInt(0);
                     page.PageId = pageId.ToInt(0) == 0 ? 1 : pageId.ToInt(0);
-                    var info = IFast.QueryPage(page, key, param.ToArray());
+                    var info = IFast.QueryPage(page, name, param.ToArray());
                     dic.Add("data", info.list);
                     dic.Add("page", info.pModel);
                 }
-                else if (FastMap.MapType(key).ToLower() == AppConfig.Page && param.Count > 0)
+                else if (FastMap.MapType(name).ToLower() == AppConfig.Page && param.Count > 0)
                 {
                     var pageSize = GetUrlParam(urlParam, "PageSize");
                     var pageId = GetUrlParam(urlParam, "PageId");
@@ -134,19 +134,19 @@ namespace Fast.Api
 
                     page.PageSize = pageSize.ToInt(0) == 0 ? 10 : pageSize.ToInt(0);
                     page.PageId = pageId.ToInt(0) == 0 ? 1 : pageId.ToInt(0);
-                    var info = IFast.QueryPage(page, key, param.ToArray());
+                    var info = IFast.QueryPage(page, name, param.ToArray());
                     dic.Add("data", info.list);
                     dic.Add("page", info.pModel);
                 }
-                else if (FastMap.MapType(key).ToLower() == AppConfig.All && dic.Count == 0)
+                else if (FastMap.MapType(name).ToLower() == AppConfig.All && dic.Count == 0)
                 {
                     isSuccess = true;
-                    data = IFast.Query(key, param.ToArray());
+                    data = IFast.Query(name, param.ToArray());
                     dic.Add("data", data);
                 }
-                else if (FastMap.MapType(key).ToLower() == AppConfig.Write && param.Count > 0)
+                else if (FastMap.MapType(name).ToLower() == AppConfig.Write && param.Count > 0)
                 {
-                    var result = IFast.Write(key, param.ToArray());
+                    var result = IFast.Write(name, param.ToArray());
                     if (result.IsSuccess)
                         isSuccess = true;
                     else
@@ -160,7 +160,7 @@ namespace Fast.Api
                     if (param.Count > 0)
                     {
                         isSuccess = true;
-                        data = IFast.Query(key, param.ToArray());
+                        data = IFast.Query(name, param.ToArray());
                         dic.Add("data", data);
                     }
                     else
@@ -175,7 +175,6 @@ namespace Fast.Api
 
             dic.Add("isSuccess", isSuccess);
             context.Response.StatusCode = 200;
-
             await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
         }
         
