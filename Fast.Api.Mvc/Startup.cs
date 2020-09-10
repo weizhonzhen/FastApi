@@ -1,14 +1,17 @@
-using FastData.Core;
+﻿using FastData.Core;
+using FastData.Core.Repository;
+using FastRedis.Core.Repository;
+using FastUntility.Core;
 using FastUntility.Core.Base;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
-using System.Collections.Generic;
 
 namespace Fast.Api.Mvc
 {
@@ -23,7 +26,10 @@ namespace Fast.Api.Mvc
             services.AddResponseCompression();
 
             services.AddTransient<IFastApi, FastApi>();
-            
+            services.AddSingleton<IRedisRepository, RedisRepository>();
+            services.AddTransient<IFastRepository, FastRepository>();
+            ServiceContext.Init(new ServiceEngine(services.BuildServiceProvider()));
+
             services.AddCors(options =>
             {
                 options.AddPolicy("any", builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
