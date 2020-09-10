@@ -1,5 +1,5 @@
-﻿using FastData.Core.Model;
-using FastUntility.Core.Base;
+﻿using FastUntility.Core.Base;
+using FastUntility.Core.Cache;
 using System;
 using System.Data.Common;
 using System.Linq;
@@ -20,17 +20,23 @@ namespace Fast.Api
             try
             {
                 var config = GetConfig(dbKey);
-                var assembly = AppDomain.CurrentDomain.GetAssemblies().ToList().Find(a => a.FullName.Split(',')[0] == config.ProviderName);
-                if (assembly == null)
-                    assembly = Assembly.Load(config.ProviderName);
+                if (BaseCache.Exists(config.ProviderName))
+                    return BaseCache.Get<object>(config.ProviderName) as DbProviderFactory;
+                else
+                {
+                    var assembly = AppDomain.CurrentDomain.GetAssemblies().ToList().Find(a => a.FullName.Split(',')[0] == config.ProviderName);
+                    if (assembly == null)
+                        assembly = Assembly.Load(config.ProviderName);
 
-                var type = assembly.GetType(config.FactoryClient, false);
-                object instance = null;
+                    var type = assembly.GetType(config.FactoryClient, false);
+                    object instance = null;
 
-                if (type != null)
-                    instance = type.InvokeMember("Instance", BindingFlags.Static | BindingFlags.Public | BindingFlags.GetField | BindingFlags.GetProperty, null, type, null);
+                    if (type != null)
+                        instance = Activator.CreateInstance(type);
 
-                return instance as DbProviderFactory;
+                    BaseCache.Set<object>(config.ProviderName, instance);
+                    return instance as DbProviderFactory;
+                }
             }
             catch
             {
