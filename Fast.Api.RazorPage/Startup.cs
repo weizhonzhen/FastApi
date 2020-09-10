@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using Fast.Api.RazorPage.Filter;
 using FastData.Core;
@@ -9,7 +10,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
+using FastData.Core.Repository;
+using FastUntility.Core;
+using FastRedis.Core.Repository;
 
 namespace Fast.Api.RazorPage
 {
@@ -24,18 +27,13 @@ namespace Fast.Api.RazorPage
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-            
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Encoding encoding = Encoding.GetEncoding("GB2312");
-
             services.AddResponseCompression();
-
             services.AddTransient<IFastApi, FastApi>();
+            services.AddSingleton<IRedisRepository, RedisRepository>();
+            services.AddTransient<IFastRepository, FastRepository>();
+            ServiceContext.Init(new ServiceEngine(services.BuildServiceProvider()));
 
             services.AddCors(options =>
             {
@@ -60,7 +58,7 @@ namespace Fast.Api.RazorPage
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                     if (contextFeature != null)
                     {
-                         BaseLog.SaveLog(contextFeature.Error.Message, "error");
+                        BaseLog.SaveLog(contextFeature.Error.Message, "error");
                         context.Response.ContentType = "application/json;charset=utf-8";
                         context.Response.StatusCode = 200;
                         var result = new Dictionary<string, object>();
