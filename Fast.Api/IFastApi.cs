@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FastData.Core.Repository;
+using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
 namespace Fast.Api
 {
     public interface IFastApi
     {
-        Task ContentAsync(HttpContext content);
+        Task ContentAsync(HttpContext content, IFastRepository IFast);
     }
 }

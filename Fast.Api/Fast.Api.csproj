@@ -1,17 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>https://github.com/weizhonzhen/FastApi</Description>
     <PackageProjectUrl>https://github.com/weizhonzhen/FastApi</PackageProjectUrl>
-    <Version>1.1.3</Version>
+    <Version>1.2.9</Version>
+    <PackageIconUrl>https://en.gravatar.com/userimage/151376774/1cba1ca23219db268cc5ed8abde11775.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fast.Untility.Core" Version="1.3.7.2" />
-    <PackageReference Include="Fast.Data.Core" Version="2.1.8.6" />
-    <PackageReference Include="Fast.Redis.Core" Version="1.1.5.2" />
+    <PackageReference Include="Fast.Data.Core" Version="2.1.8.7" />
   </ItemGroup>
 
 </Project>

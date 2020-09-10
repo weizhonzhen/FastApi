@@ -1,6 +1,7 @@
-using FastUntility.Core.Base;
+﻿using FastUntility.Core.Base;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using FastData.Core.Repository;
 
 namespace Fast.Api
 {
@@ -10,13 +11,13 @@ namespace Fast.Api
 
         public FastApiHandler(RequestDelegate request) { next = request; }
 
-        public Task InvokeAsync(HttpContext context, IFastApi response)
+        public Task InvokeAsync(HttpContext context, IFastApi response,IFastRepository IFast)
         {
             var key = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
             if (key == "help" || key == "xml" || key == "del")
                 return next(context);
             else
-                return response.ContentAsync(context);
+                return response.ContentAsync(context, IFast);
         }
     }
 }

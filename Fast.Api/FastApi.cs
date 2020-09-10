@@ -1,4 +1,4 @@
-using FastData.Core;
+﻿using FastData.Core;
 using FastUntility.Core.Base;
 using FastUntility.Core.Page;
 using Microsoft.AspNetCore.Http;
@@ -10,12 +10,13 @@ using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using FastData.Core.Repository;
 
 namespace Fast.Api
 {
     public class FastApi : IFastApi
     {
-        public async Task ContentAsync(HttpContext context)
+        public async Task ContentAsync(HttpContext context, IFastRepository IFast)
         {
             var urlParam = HttpUtility.UrlDecode(GetUrlParam(context));
             var isSuccess = true;
@@ -33,7 +34,7 @@ namespace Fast.Api
                 var param = new List<DbParameter>();
 
                 foreach (var item in FastMap.MapParam(key))
-                {
+                {                    
                     var checkKey = FastMap.MapCheckMap(key, item);
                     var existsKey = FastMap.MapExistsMap(key, item);
                     var tempParam = DbProviderFactories.GetFactory(FastMap.MapDb(key)).CreateParameter();
@@ -69,7 +70,7 @@ namespace Fast.Api
                         existsParam.Value = tempParam.Value;
                         existsListParam.Add(existsParam);
 
-                        var checkData = FastMap.Query(existsKey, existsListParam.ToArray())?.First() ?? new Dictionary<string, object>();
+                        var checkData = IFast.Query(existsKey, existsListParam.ToArray())?.First() ?? new Dictionary<string, object>();
                         if (checkData.GetValue("count").ToStr().ToInt(0) >= 1)
                         {
                             dic.Add("error", string.Format("{0}：{1}已存在", item, tempParam.Value));
@@ -86,7 +87,7 @@ namespace Fast.Api
                         checkParam.Value = GetUrlParam(urlParam, item);
                         checkListParam.Add(checkParam);
 
-                        var checkData = FastMap.Query(existsKey, checkListParam.ToArray())?.First() ?? new Dictionary<string, object>();
+                        var checkData = IFast.Query(existsKey, checkListParam.ToArray())?.First() ?? new Dictionary<string, object>();
                         if (checkData.GetValue("count").ToStr().ToInt(0) < 1)
                         {
                             dic.Add("error", string.Format("{0}：{1}不存在", item, tempParam.Value));
@@ -120,7 +121,7 @@ namespace Fast.Api
 
                     page.PageSize = pageSize.ToInt(0) == 0 ? 10 : pageSize.ToInt(0);
                     page.PageId = pageId.ToInt(0) == 0 ? 1 : pageId.ToInt(0);
-                    var info = FastMap.QueryPage(page, key, param.ToArray());
+                    var info = IFast.QueryPage(page, key, param.ToArray());
                     dic.Add("data", info.list);
                     dic.Add("page", info.pModel);
                 }
@@ -133,19 +134,19 @@ namespace Fast.Api
 
                     page.PageSize = pageSize.ToInt(0) == 0 ? 10 : pageSize.ToInt(0);
                     page.PageId = pageId.ToInt(0) == 0 ? 1 : pageId.ToInt(0);
-                    var info = FastMap.QueryPage(page, key, param.ToArray());
+                    var info = IFast.QueryPage(page, key, param.ToArray());
                     dic.Add("data", info.list);
                     dic.Add("page", info.pModel);
                 }
                 else if (FastMap.MapType(key).ToLower() == AppConfig.All && dic.Count == 0)
                 {
                     isSuccess = true;
-                    data = FastMap.Query(key, param.ToArray());
+                    data = IFast.Query(key, param.ToArray());
                     dic.Add("data", data);
                 }
                 else if (FastMap.MapType(key).ToLower() == AppConfig.Write && param.Count > 0)
                 {
-                    var result = FastMap.Write(key, param.ToArray());
+                    var result = IFast.Write(key, param.ToArray());
                     if (result.IsSuccess)
                         isSuccess = true;
                     else
@@ -159,7 +160,7 @@ namespace Fast.Api
                     if (param.Count > 0)
                     {
                         isSuccess = true;
-                        data = FastMap.Query(key, param.ToArray());
+                        data = IFast.Query(key, param.ToArray());
                         dic.Add("data", data);
                     }
                     else
