@@ -185,7 +185,7 @@ namespace Fast.Api
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        private static string GetUrlParam(HttpContext context)
+        private string GetUrlParam(HttpContext context)
         {
             using (var content = new StreamReader(context.Request.Body))
             {
@@ -208,7 +208,7 @@ namespace Fast.Api
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        private static string GetUrlParam(string urlParam, string key)
+        private string GetUrlParam(string urlParam, string key)
         {
             var dic = new Dictionary<string, object>();
             if (urlParam.IndexOf('&') > 0)
