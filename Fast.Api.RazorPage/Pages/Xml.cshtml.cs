@@ -1,3 +1,5 @@
+﻿using FastData.Core;
+using FastData.Core.Repository;
 using FastUntility.Core.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,6 +13,13 @@ namespace Fast.Api.RazorPage.Pages
     public class XmlModel : PageModel
     {
         public Dictionary<string,object> Map = new Dictionary<string, object>();
+        private IFastRepository IFast;
+
+        public XmlModel(IFastRepository _IFast)
+        {
+            IFast = _IFast;
+        }
+
         public void OnGet()
         {
             var xml = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
@@ -40,7 +49,7 @@ namespace Fast.Api.RazorPage.Pages
                         xmlWrite.Write(Encoding.Default.GetBytes(item.xml));
                     }
 
-                    if (FastData.Core.FastMap.CheckMap(xmlPath))
+                    if (IFast.CheckMap(xmlPath))
                     {
                         var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
 
@@ -53,7 +62,7 @@ namespace Fast.Api.RazorPage.Pages
                             System.IO.File.WriteAllText("map.json", json);
                         }
 
-                        FastData.Core.FastMap.InstanceMap();
+                       FastMap.InstanceMap();
                         result.Add("msg", "操作成功");
                         result.Add("Issuccess", true);
                     }
@@ -93,7 +102,7 @@ namespace Fast.Api.RazorPage.Pages
                     var json = BaseJson.ModelToJson(dic);
                     System.IO.File.WriteAllText("map.json", json);
 
-                    FastData.Core.FastMap.InstanceMap();
+                   FastMap.InstanceMap();
                 }
 
                 result.Add("msg", "操作成功");
