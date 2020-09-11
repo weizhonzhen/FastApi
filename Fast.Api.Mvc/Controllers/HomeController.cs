@@ -1,13 +1,22 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using FastUntility.Core.Base;
 using System.Text;
 using System.Collections.Generic;
+using FastData.Core;
+using FastData.Core.Repository;
 
 namespace Fast.Api.Mvc.Controllers
 {
     public class HomeController : Controller
     {
+        private IFastRepository IFast;
+
+        public HomeController(IFastRepository _IFast)
+        {
+            IFast = _IFast;
+        }
+
         /// <summary>
         /// 加载帮助文档
         /// </summary>
@@ -15,7 +24,6 @@ namespace Fast.Api.Mvc.Controllers
         [Route("help")]
         public IActionResult Index()
         {
-            var aa = FastData.Core.FastMap.Api;
             return View();
         }
 
@@ -63,7 +71,7 @@ namespace Fast.Api.Mvc.Controllers
                         xmlWrite.Write(Encoding.Default.GetBytes(xml));
                     }
 
-                    if (FastData.Core.FastMap.CheckMap(xmlPath))
+                    if (IFast.CheckMap(xmlPath))
                     {
                         var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
 
@@ -76,7 +84,7 @@ namespace Fast.Api.Mvc.Controllers
                             System.IO.File.WriteAllText("map.json", json);
                         }
 
-                        FastData.Core.FastMap.InstanceMap();
+                        FastMap.InstanceMap();
                         return Json(new { msg = "操作成功", Issuccess = true });
                     }
                     else
@@ -117,7 +125,7 @@ namespace Fast.Api.Mvc.Controllers
                     var json = BaseJson.ModelToJson(dic);
                     System.IO.File.WriteAllText("map.json", json);
 
-                    FastData.Core.FastMap.InstanceMap();
+                    FastMap.InstanceMap();
                 }               
 
                 return Json(new { msg = "操作成功" });
