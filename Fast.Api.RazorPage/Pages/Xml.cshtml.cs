@@ -13,7 +13,7 @@ namespace Fast.Api.RazorPage.Pages
     public class XmlModel : PageModel
     {
         public Dictionary<string,object> Map = new Dictionary<string, object>();
-        private IFastRepository IFast;
+        private readonly IFastRepository IFast;
 
         public XmlModel(IFastRepository _IFast)
         {
