@@ -10,7 +10,7 @@ namespace Fast.Api.Mvc.Controllers
 {
     public class HomeController : Controller
     {
-        private IFastRepository IFast;
+        private readonly IFastRepository IFast;
 
         public HomeController(IFastRepository _IFast)
         {
