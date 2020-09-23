@@ -24,11 +24,10 @@ namespace Fast.Api.RazorPage.Pages
         {
             var xml = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
 
-            foreach (var item in xml.Path)
-            {
-                if (System.IO.File.Exists(item))
-                    Map.Add(item, System.IO.File.ReadAllText(item));
-            }
+            xml.Path.ForEach(a => {
+                if (System.IO.File.Exists(a))
+                    Map.Add(a, System.IO.File.ReadAllText(a));
+            });
         }
 
         public IActionResult OnPostXml(SaveParam item)
