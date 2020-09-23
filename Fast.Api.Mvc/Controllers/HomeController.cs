@@ -37,11 +37,10 @@ namespace Fast.Api.Mvc.Controllers
             var model = new Dictionary<string, object>();
             var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
 
-            foreach(var item in map.Path)
-            {
-                if (System.IO.File.Exists(item))
-                    model.Add(item, System.IO.File.ReadAllText(item));
-            }
+            map.Path.ForEach(a => {
+                if (System.IO.File.Exists(a))
+                    model.Add(a, System.IO.File.ReadAllText(a));
+            });
 
             ViewData.Model = model;
             return View();
