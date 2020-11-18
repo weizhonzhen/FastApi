@@ -25,10 +25,8 @@ namespace Fast.Api.Mvc
             services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
             services.AddResponseCompression();
 
-            services.AddTransient<IFastApi, FastApi>();
-            services.AddSingleton<IRedisRepository, RedisRepository>();
-            services.AddTransient<IFastRepository, FastRepository>();
-            ServiceContext.Init(new ServiceEngine(services.BuildServiceProvider()));
+            services.AddFastData();
+            services.AddFastApi();
 
             services.AddCors(options =>
             {
