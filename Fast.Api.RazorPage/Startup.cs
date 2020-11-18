@@ -30,10 +30,8 @@ namespace Fast.Api.RazorPage
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Encoding encoding = Encoding.GetEncoding("GB2312");
             services.AddResponseCompression();
-            services.AddTransient<IFastApi, FastApi>();
-            services.AddSingleton<IRedisRepository, RedisRepository>();
-            services.AddTransient<IFastRepository, FastRepository>();
-            ServiceContext.Init(new ServiceEngine(services.BuildServiceProvider()));
+            services.AddFastData();
+            services.AddFastApi();
 
             services.AddCors(options =>
             {
