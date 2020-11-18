@@ -6,7 +6,7 @@
 1、ConfigureServices
 ```csharp
 services.AddFastData();
-services.AddFastRedis();
+//services.AddFastRedis();
 services.AddFastApi();
 
 FastMap.InstanceMap();//读取xml
