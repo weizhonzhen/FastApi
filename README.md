@@ -13,10 +13,10 @@ FastMap.InstanceMap();//读取xml
 2、Configure
 ```csharp
 FilterUrl 要过滤的url
-IsAlone是否独立站点使用
+IsAlone是否独立站点使用,如果是跟业务系统（mvc或webapi）一起使用为false
 app.UseFastApiMiddleware(a =>
 {
-     a.IsAlone = false; 
+     a.IsAlone = true; 
      a.FilterUrl.Add("help");
      a.FilterUrl.Add("xml");
      a.FilterUrl.Add("del");
