@@ -4,12 +4,12 @@ using FastData.Core.Repository;
 
 namespace Fast.Api
 {
-    internal class FastApiHandler
+    public class FastApiHandler
     {
         private readonly RequestDelegate next;
         private readonly OptionModel option;
 
-        public FastApiHandler(RequestDelegate request, OptionModel _option) 
+        public FastApiHandler(RequestDelegate request, OptionModel _option=null) 
         { 
             next = request;
             option = _option;

@@ -22,10 +22,10 @@ namespace Fast.Api
 
             var name = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
 
-            if (option.FilterUrl.Exists(a => a.ToLower() == name) || name == "")
+            if (option != null && option.FilterUrl.Exists(a => a.ToLower() == name) || name == "")
                 await Next(context);
 
-            if (!option.IsAlone && (!IFast.IsExists(name) || IFast.MapDb(name).ToStr() == ""))
+            if (option != null && !option.IsAlone && (!IFast.IsExists(name) || IFast.MapDb(name).ToStr() == ""))
                 await Next(context);
             else if (!IFast.IsExists(name))
             {
