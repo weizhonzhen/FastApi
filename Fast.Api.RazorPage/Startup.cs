@@ -10,9 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using FastData.Core.Repository;
-using FastUntility.Core;
-using FastRedis.Core.Repository;
 
 namespace Fast.Api.RazorPage
 {
@@ -30,16 +27,15 @@ namespace Fast.Api.RazorPage
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Encoding encoding = Encoding.GetEncoding("GB2312");
             services.AddResponseCompression();
-            services.AddFastData();
+
             services.AddFastApi();
+            FastMap.InstanceMap();
 
             services.AddCors(options =>
             {
                 options.AddPolicy("any", builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
             });
             
-            FastMap.InstanceMap();
-
             services.AddMvc(options=> { options.Filters.Add(new CheckFilter()); }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
             .AddRazorPagesOptions(o => { 
                 o.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute());
@@ -68,9 +64,13 @@ namespace Fast.Api.RazorPage
             });
 
             app.UseStaticFiles();
-            app.UseCookiePolicy();
-
-            app.UseMiddleware<FastApiHandler>();
+            app.UseFastApiMiddleware(a =>
+            {
+                a.IsAlone = false;
+                a.FilterUrl.Add("help");
+                a.FilterUrl.Add("xml");
+                a.FilterUrl.Add("del");
+            });
             app.UseMvc();
         }
     }
