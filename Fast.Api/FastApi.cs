@@ -1,10 +1,8 @@
-﻿using FastData.Core;
-using FastUntility.Core.Base;
+﻿using FastUntility.Core.Base;
 using FastUntility.Core.Page;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Linq;
@@ -16,17 +14,35 @@ namespace Fast.Api
 {
     public class FastApi : IFastApi
     {
-        public async Task ContentAsync(HttpContext context, IFastRepository IFast)
+        public async Task ContentAsync(HttpContext context, IFastRepository IFast, RequestDelegate Next, OptionModel option)
         {
             var urlParam = HttpUtility.UrlDecode(GetUrlParam(context));
             var isSuccess = true;
             var dic = new Dictionary<string, object>();
-            var stopwatch = new Stopwatch();
 
-            stopwatch.Start();
-
-            context.Response.ContentType = "application/Json";
             var name = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
+
+            if (option.FilterUrl.Exists(a => a.ToLower() == name) || name == "")
+                await Next(context);
+
+            if (!option.IsAlone && (!IFast.IsExists(name) || IFast.MapDb(name).ToStr() == ""))
+                await Next(context);
+            else if (!IFast.IsExists(name))
+            {
+                dic.Add("isSuccess", false);
+                dic.Add("error", "接口不存在");
+                context.Response.StatusCode = 200;
+                context.Response.ContentType = "application/Json";
+                await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
+            }
+            else if (IFast.MapDb(name).ToStr() == "")
+            {
+                dic.Add("isSuccess", false);
+                dic.Add("error", string.Format("map id {0}的db没有配置", name));
+                context.Response.StatusCode = 200;
+                context.Response.ContentType = "application/Json";
+                await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
+            }
 
             if (IFast.IsExists(name))
             {
@@ -167,14 +183,10 @@ namespace Fast.Api
                         isSuccess = false;
                 }
             }
-            else
-            {
-                isSuccess = false;
-                dic.Add("error", "接口不存在");
-            }
-
+            
             dic.Add("isSuccess", isSuccess);
             context.Response.StatusCode = 200;
+            context.Response.ContentType = "application/Json";
             await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
         }
         
@@ -209,7 +221,6 @@ namespace Fast.Api
         /// <returns></returns>
         private string GetUrlParam(string urlParam, string key)
         {
-            var dic = new Dictionary<string, object>();
             if (urlParam.IndexOf('&') > 0)
             {
                 foreach (var temp in urlParam.Split('&'))
