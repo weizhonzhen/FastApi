@@ -20,9 +20,9 @@ namespace Fast.Api.RazorPage.Pages
             IFast = _IFast;
         }
 
-        public void OnGet()
+        public void OnGet()      
         {
-            var xml = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
+            var xml = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json", false);
 
             xml.Path.ForEach(a => {
                 if (System.IO.File.Exists(a))
@@ -50,7 +50,7 @@ namespace Fast.Api.RazorPage.Pages
 
                     if (IFast.CheckMap(xmlPath))
                     {
-                        var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
+                        var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json", false);
 
                         if (!map.Path.Exists(a => a.ToLower() == string.Format("map/{0}", item.name.ToLower())))
                         {
@@ -92,7 +92,7 @@ namespace Fast.Api.RazorPage.Pages
                 var xmlPath = string.Format("map/{0}", item.name);
                 System.IO.File.Delete(xmlPath);
 
-                var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json");
+                var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json", false);
                 if (map.Path.Exists(a => a.ToLower() == string.Format("map/{0}", item.name.ToLower())))
                 {
                     var dic = new Dictionary<string, object>();
