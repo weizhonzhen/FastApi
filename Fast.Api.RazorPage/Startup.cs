@@ -66,7 +66,7 @@ namespace Fast.Api.RazorPage
             app.UseStaticFiles();
             app.UseFastApiMiddleware(a =>
             {
-                a.IsAlone = false;
+                a.IsAlone = true;
                 a.FilterUrl.Add("help");
                 a.FilterUrl.Add("xml");
                 a.FilterUrl.Add("del");
