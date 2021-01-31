@@ -1,7 +1,4 @@
 ﻿using FastData.Core;
-using FastData.Core.Repository;
-using FastRedis.Core.Repository;
-using FastUntility.Core;
 using FastUntility.Core.Base;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -24,9 +21,9 @@ namespace Fast.Api.Mvc
 
             services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
             services.AddResponseCompression();
-
-            services.AddFastData();
             services.AddFastApi();
+
+            FastMap.InstanceMap();
 
             services.AddCors(options =>
             {
@@ -34,8 +31,6 @@ namespace Fast.Api.Mvc
             });
 
             services.AddMvc();
-
-            FastMap.InstanceMap();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -58,8 +53,14 @@ namespace Fast.Api.Mvc
                 });
             });
 
-            app.UseStaticFiles();
-            app.UseMiddleware<FastApiHandler>();
+            app.UseStaticFiles(); 
+            app.UseFastApiMiddleware(a =>
+            {
+                a.IsAlone = false;
+                a.FilterUrl.Add("help");
+                a.FilterUrl.Add("xml");
+                a.FilterUrl.Add("del");
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
