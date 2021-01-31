@@ -5,7 +5,6 @@
 
 1、ConfigureServices
 ```csharp
-services.AddFastData();
 services.AddFastApi();
 
 FastMap.InstanceMap();//读取xml
@@ -13,7 +12,15 @@ FastMap.InstanceMap();//读取xml
 
 2、Configure
 ```csharp
-app.UseMiddleware<FastApiHandler>();//使用中间件
+FilterUrl 要过滤的url
+IsAlone是否独立站点使用
+app.UseFastApiMiddleware(a =>
+{
+     a.IsAlone = false; 
+     a.FilterUrl.Add("help");
+     a.FilterUrl.Add("xml");
+     a.FilterUrl.Add("del");
+});//使用中间件
 ```
  
 3、配配数据库连接 db.json
