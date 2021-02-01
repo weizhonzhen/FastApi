@@ -14,7 +14,7 @@ namespace Fast.Api
 {
     public class FastApi : IFastApi
     {
-        public async Task ContentAsync(HttpContext context, IFastRepository IFast, RequestDelegate Next)
+        public async Task ContentAsync(HttpContext context, IFastRepository IFast)
         {
             var urlParam = HttpUtility.UrlDecode(GetUrlParam(context));
             var isSuccess = true;

@@ -6,6 +6,6 @@ namespace Fast.Api
 {
     public interface IFastApi
     {
-        Task ContentAsync(HttpContext content, IFastRepository IFast, RequestDelegate next);
+        Task ContentAsync(HttpContext content, IFastRepository IFast);
     }
 }

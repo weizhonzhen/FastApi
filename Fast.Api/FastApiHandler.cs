@@ -26,7 +26,7 @@ namespace Fast.Api
             if (option != null && !option.IsAlone && (!IFast.IsExists(name) || IFast.MapDb(name).ToStr() == ""))
                 return next(context);
 
-            return response.ContentAsync(context, IFast, next);
+            return response.ContentAsync(context, IFast);
         }
     }
 }
