@@ -14,7 +14,7 @@ namespace Fast.Api
 {
     public class FastApi : IFastApi
     {
-        public async Task ContentAsync(HttpContext context, IFastRepository IFast, RequestDelegate Next, OptionModel option)
+        public async Task ContentAsync(HttpContext context, IFastRepository IFast, RequestDelegate Next)
         {
             var urlParam = HttpUtility.UrlDecode(GetUrlParam(context));
             var isSuccess = true;
@@ -22,12 +22,7 @@ namespace Fast.Api
 
             var name = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
 
-            if (option != null && option.FilterUrl.Exists(a => a.ToLower() == name) || name == "")
-                await Next(context);
-
-            if (option != null && !option.IsAlone && (!IFast.IsExists(name) || IFast.MapDb(name).ToStr() == ""))
-                await Next(context);
-            else if (!IFast.IsExists(name))
+           if (!IFast.IsExists(name))
             {
                 dic.Add("isSuccess", false);
                 dic.Add("error", "接口不存在");
@@ -43,8 +38,7 @@ namespace Fast.Api
                 context.Response.ContentType = "application/Json";
                 await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
             }
-
-            if (IFast.IsExists(name))
+            else if (IFast.IsExists(name))
             {
                 var data = new List<Dictionary<string, object>>();
                 var param = new List<DbParameter>();
@@ -182,12 +176,12 @@ namespace Fast.Api
                     else
                         isSuccess = false;
                 }
+
+                dic.Add("isSuccess", isSuccess);
+                context.Response.StatusCode = 200;
+                context.Response.ContentType = "application/Json";
+                await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
             }
-            
-            dic.Add("isSuccess", isSuccess);
-            context.Response.StatusCode = 200;
-            context.Response.ContentType = "application/Json";
-            await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
         }
         
         #region 获取参数

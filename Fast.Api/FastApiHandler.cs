@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using FastData.Core.Repository;
+using FastUntility.Core.Base;
 
 namespace Fast.Api
 {
@@ -17,7 +18,15 @@ namespace Fast.Api
 
         public Task InvokeAsync(HttpContext context, IFastApi response, IFastRepository IFast)
         {
-            return response.ContentAsync(context, IFast, next,option);
+            var name = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
+
+            if (option != null && option.FilterUrl.Exists(a => a.ToLower() == name) || name == "")
+                return next(context);
+            
+            if (option != null && !option.IsAlone && (!IFast.IsExists(name) || IFast.MapDb(name).ToStr() == ""))
+                return next(context);
+
+            return response.ContentAsync(context, IFast, next);
         }
     }
 }
