@@ -102,7 +102,8 @@ app.UseFastApiMiddleware(a =>
 	4、"write" 写操作
 	5、 "hide" 接口界面不显示
 	6、 "pageall" 分页参数可以不传
- 	dynamic下节点 isPropertyAvailable、isNotNullOrEmpty、isequal、isnotequal、isgreaterthan、islessthan、isnullorempty、isnotnullorempty、if、choose上的属性有5种
+ 	dynamic下节点 isPropertyAvailable、isNotNullOrEmpty、isequal、isnotequal、isgreaterthan、
+			islessthan、isnullorempty、isnotnullorempty、if、choose上的属性有6种
  	date 是验证时间
 	required 是验证必填
 	maxlength 是验证最大长度 
