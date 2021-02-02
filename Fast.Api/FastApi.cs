@@ -20,22 +20,21 @@ namespace Fast.Api
             var isSuccess = true;
             var dic = new Dictionary<string, object>();
 
+            context.Response.StatusCode = 200;
+            context.Response.ContentType = "application/Json";
+
             var name = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
 
-           if (!IFast.IsExists(name))
+            if (!IFast.IsExists(name))
             {
                 dic.Add("isSuccess", false);
                 dic.Add("error", "接口不存在");
-                context.Response.StatusCode = 200;
-                context.Response.ContentType = "application/Json";
                 await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
             }
             else if (IFast.MapDb(name).ToStr() == "")
             {
                 dic.Add("isSuccess", false);
                 dic.Add("error", string.Format("map id {0}的db没有配置", name));
-                context.Response.StatusCode = 200;
-                context.Response.ContentType = "application/Json";
                 await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
             }
             else if (IFast.IsExists(name))
@@ -44,14 +43,14 @@ namespace Fast.Api
                 var param = new List<DbParameter>();
 
                 foreach (var item in IFast.MapParam(name))
-                {                    
+                {
                     var checkKey = IFast.MapCheckMap(name, item);
                     var existsKey = IFast.MapExistsMap(name, item);
                     var tempParam = DbProviderFactories.GetFactory(IFast.MapDb(name)).CreateParameter();
                     tempParam.ParameterName = item;
                     tempParam.Value = GetUrlParam(urlParam, item);
                     param.Add(tempParam);
-                    
+
                     if (!string.IsNullOrEmpty(IFast.MapRequired(name, item)))
                     {
                         if (!(IFast.MapRequired(name, item).ToLower() == "true" && !string.IsNullOrEmpty(tempParam.Value.ToStr())))
@@ -69,7 +68,7 @@ namespace Fast.Api
                             dic.Add("error", string.Format("{0}：{1}，最大长度{2}", item, tempParam.Value.ToStr(), IFast.MapMaxlength(name, item)));
                             param.Remove(tempParam);
                             break;
-                        }                        
+                        }
                     }
 
                     if (!string.IsNullOrEmpty(existsKey))
@@ -122,8 +121,8 @@ namespace Fast.Api
                         param.Remove(tempParam);
                 }
 
-                if (IFast.MapType(name).ToLower() == AppConfig.PageAll&&dic.Count==0)
-                {                    
+                if (IFast.MapType(name).ToLower() == AppConfig.PageAll && dic.Count == 0)
+                {
                     var pageSize = GetUrlParam(urlParam, "PageSize");
                     var pageId = GetUrlParam(urlParam, "PageId");
                     isSuccess = true;
@@ -166,7 +165,7 @@ namespace Fast.Api
                     }
                 }
                 else
-                { 
+                {
                     if (param.Count > 0)
                     {
                         isSuccess = true;
@@ -178,8 +177,6 @@ namespace Fast.Api
                 }
 
                 dic.Add("isSuccess", isSuccess);
-                context.Response.StatusCode = 200;
-                context.Response.ContentType = "application/Json";
                 await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
             }
         }
