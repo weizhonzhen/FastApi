@@ -17,7 +17,7 @@ namespace Fast.Api
         public async Task ContentAsync(HttpContext context, IFastRepository IFast)
         {
             var urlParam = HttpUtility.UrlDecode(GetUrlParam(context));
-            var isSuccess = true;
+            var success = true;
             var dic = new Dictionary<string, object>();
 
             context.Response.StatusCode = 200;
@@ -27,13 +27,13 @@ namespace Fast.Api
 
             if (!IFast.IsExists(name))
             {
-                dic.Add("isSuccess", false);
+                dic.Add("success", false);
                 dic.Add("error", "接口不存在");
                 await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
             }
             else if (IFast.MapDb(name).ToStr() == "")
             {
-                dic.Add("isSuccess", false);
+                dic.Add("success", false);
                 dic.Add("error", string.Format("map id {0}的db没有配置", name));
                 await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
             }
@@ -125,7 +125,7 @@ namespace Fast.Api
                 {
                     var pageSize = GetUrlParam(urlParam, "PageSize");
                     var pageId = GetUrlParam(urlParam, "PageId");
-                    isSuccess = true;
+                    success = true;
                     var page = new PageModel();
 
                     page.PageSize = pageSize.ToInt(0) == 0 ? 10 : pageSize.ToInt(0);
@@ -138,7 +138,7 @@ namespace Fast.Api
                 {
                     var pageSize = GetUrlParam(urlParam, "PageSize");
                     var pageId = GetUrlParam(urlParam, "PageId");
-                    isSuccess = true;
+                    success = true;
                     var page = new PageModel();
 
                     page.PageSize = pageSize.ToInt(0) == 0 ? 10 : pageSize.ToInt(0);
@@ -149,7 +149,7 @@ namespace Fast.Api
                 }
                 else if (IFast.MapType(name).ToLower() == AppConfig.All && dic.Count == 0)
                 {
-                    isSuccess = true;
+                    success = true;
                     data = IFast.Query(name, param.ToArray());
                     dic.Add("data", data);
                 }
@@ -157,10 +157,10 @@ namespace Fast.Api
                 {
                     var result = IFast.Write(name, param.ToArray());
                     if (result.IsSuccess)
-                        isSuccess = true;
+                        success = true;
                     else
                     {
-                        isSuccess = false;
+                        success = false;
                         dic.Add("error", result.Message);
                     }
                 }
@@ -168,15 +168,15 @@ namespace Fast.Api
                 {
                     if (param.Count > 0)
                     {
-                        isSuccess = true;
+                        success = true;
                         data = IFast.Query(name, param.ToArray());
                         dic.Add("data", data);
                     }
                     else
-                        isSuccess = false;
+                        success = false;
                 }
 
-                dic.Add("isSuccess", isSuccess);
+                dic.Add("success", success);
                 await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
             }
         }
