@@ -1,4 +1,6 @@
-﻿using FastUntility.Core.Base;
+﻿using FastData.Core.Base;
+using FastData.Core.Model;
+using FastUntility.Core.Base;
 using FastUntility.Core.Cache;
 using System;
 using System.Collections.Generic;
@@ -16,11 +18,20 @@ namespace Fast.Api
         /// <param name="providerInvariantName"></param>
         /// <param name="dbType"></param>
         /// <returns></returns>
-        public static DbProviderFactory GetFactory(string dbKey)
+        public static DbProviderFactory GetFactory(string dbKey,bool IsResource =false, string dbFile = "db.json")
         {
             try
             {
-                var config = GetConfig(dbKey);
+                var config = new ConfigModel();
+
+                if (IsResource)
+                {
+                    var projectName = Assembly.GetCallingAssembly().GetName().Name;
+                    config = DataConfig.Get(dbKey, projectName, dbFile);
+                }
+                else
+                    config = DataConfig.Get(dbKey);
+
                 if (BaseCache.Exists(config.ProviderName))
                     return BaseCache.Get<object>(config.ProviderName) as DbProviderFactory;
                 else
@@ -39,34 +50,11 @@ namespace Fast.Api
                     return instance as DbProviderFactory;
                 }
             }
-            catch
+            catch(Exception ex)
             {
+                BaseLog.SaveLog(ex.Message + ex.StackTrace, "GetFactory");
                 return null;
             }
-        }
-
-        /// <summary>
-        /// 获取配置实体
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        private static ConfigModel GetConfig(string key = null)
-        {
-            var list = new List<ConfigModel>();
-            var cacheKey = key == null ? "FastApi.Config" : string.Format("FastApi.Config.{0}", key);
-            
-            if (BaseCache.Exists(cacheKey))
-                list = BaseCache.Get<List<ConfigModel>>( cacheKey);
-            else
-            {
-                list = BaseConfig.GetListValue<ConfigModel>("DataConfig", "db.json");
-                BaseCache.Set<List<ConfigModel>>(cacheKey, list);
-            }
-
-            if (string.IsNullOrEmpty(key))
-                return list[0];
-            else
-                return list.Find(a => a.Key.ToLower() == key.ToLower());
         }
     }
 }
