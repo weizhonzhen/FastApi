@@ -23,7 +23,7 @@ app.UseFastApiMiddleware(a =>
 });
 
 跟业务系统（mvc或webapi）一起使用为false,FilterUrl可以不用写  
-IsResource xml 是否嵌入的资源
+IsResource 指xml是否嵌入的资源
 dbFile 是数据库的文件
 app.UseFastApiMiddleware(a =>
 {
