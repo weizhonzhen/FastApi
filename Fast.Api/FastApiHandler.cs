@@ -10,8 +10,8 @@ namespace Fast.Api
         private readonly RequestDelegate next;
         private readonly OptionModel option;
 
-        public FastApiHandler(RequestDelegate request, OptionModel _option=null) 
-        { 
+        public FastApiHandler(RequestDelegate request, OptionModel _option = null)
+        {
             next = request;
             option = _option;
         }
@@ -26,7 +26,10 @@ namespace Fast.Api
             if (option != null && !option.IsAlone && (!IFast.IsExists(name) || IFast.MapDb(name).ToStr() == ""))
                 return next(context);
 
-            return response.ContentAsync(context, IFast);
+            if (option != null)
+                return response.ContentAsync(context, IFast, option.IsResource, option.dbFile);
+            else
+                return response.ContentAsync(context, IFast);
         }
     }
 }

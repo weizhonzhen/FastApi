@@ -6,6 +6,6 @@ namespace Fast.Api
 {
     public interface IFastApi
     {
-        Task ContentAsync(HttpContext content, IFastRepository IFast);
+        Task ContentAsync(HttpContext content, IFastRepository IFast, bool IsResource=false, string dbFile = "db.json");
     }
 }
