@@ -5,6 +5,7 @@ using FastUntility.Core;
 using Microsoft.AspNetCore.Builder;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -12,8 +13,9 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddFastApi(this IServiceCollection serviceCollection, ConfigApi config)
         {
+            var projectName = Assembly.GetCallingAssembly().GetName().Name;
             if (config.IsResource)
-                FastMap.InstanceMapResource(config.dbKey, config.dbFile, config.mapFile);
+                FastMap.InstanceMapResource(config.dbKey, config.dbFile, config.mapFile, projectName);
             else
                 FastMap.InstanceMap(config.dbKey, config.dbFile, config.mapFile);
 
