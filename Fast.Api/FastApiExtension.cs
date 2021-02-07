@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class FastApiExtension
     {
-        public static IServiceCollection AddFastApi(this IServiceCollection serviceCollection, ConfigModel config)
+        public static IServiceCollection AddFastApi(this IServiceCollection serviceCollection, ConfigApi config)
         {
             if (config.IsResource)
                 FastMap.InstanceMapResource(config.dbKey, config.dbFile, config.mapFile);
@@ -23,15 +23,15 @@ namespace Microsoft.Extensions.DependencyInjection
             return serviceCollection;
         }
 
-        public static IApplicationBuilder UseFastApiMiddleware(this IApplicationBuilder app, Action<OptionModel> optionsAction)
+        public static IApplicationBuilder UseFastApiMiddleware(this IApplicationBuilder app, Action<ConfigOption> optionsAction)
         {
-            var options = new OptionModel();
+            var options = new ConfigOption();
             optionsAction(options);
             return app.UseMiddleware<FastApiHandler>(options);
         }
     }
 
-    public class ConfigModel
+    public class ConfigApi
     {
         public bool IsResource { get; set; }
 
@@ -42,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public string mapFile { get; set; } = "map.json";
     }
 
-    public class OptionModel
+    public class ConfigOption
     {
         public bool IsAlone { get; set; }
 

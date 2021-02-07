@@ -9,9 +9,9 @@ namespace Fast.Api
     public class FastApiHandler
     {
         private readonly RequestDelegate next;
-        private readonly OptionModel option;
+        private readonly ConfigOption option;
 
-        public FastApiHandler(RequestDelegate request, OptionModel _option = null)
+        public FastApiHandler(RequestDelegate request, ConfigOption _option = null)
         {
             next = request;
             option = _option;
