@@ -4,6 +4,7 @@ using FastData.Core.Repository;
 using FastUntility.Core;
 using Microsoft.AspNetCore.Builder;
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -39,5 +40,16 @@ namespace Microsoft.Extensions.DependencyInjection
         public string dbFile { get; set; } = "db.json";
 
         public string mapFile { get; set; } = "map.json";
+    }
+
+    public class OptionModel
+    {
+        public bool IsAlone { get; set; }
+
+        public bool IsResource { get; set; }
+
+        public List<string> FilterUrl { get; set; } = new List<string>();
+
+        public string dbFile { get; set; } = "db.json";
     }
 }

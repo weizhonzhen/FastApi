@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using FastData.Core.Repository;
 using FastUntility.Core.Base;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Fast.Api
 {
