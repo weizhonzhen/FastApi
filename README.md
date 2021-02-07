@@ -6,8 +6,10 @@
 1、ConfigureServices
 ```csharp
 services.AddFastApi();
-
 FastMap.InstanceMap();//读取xml
+
+new pagepackages
+services.AddFastApi(new ConfigApi { mapFile = "map.json", dbKey = AppSetting.Db.EmrDb, IsResource = true, dbFile = "db.json" });
 ```
 
 2、Configure
