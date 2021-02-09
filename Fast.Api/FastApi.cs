@@ -123,12 +123,14 @@ namespace Fast.Api
                     if (tempParam.Value.ToStr() == "")
                         param.Remove(tempParam);
                 }
-
-                if (dic.Count > 0)
-                    await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
-                else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.PageAll || IFast.MapType(name).ToStr().ToLower() == AppConfig.Page)
+                using (var db = new DataContext(dbKey))
                 {
-                    using (var db = new DataContext(dbKey))
+                    var tempParam = param.ToArray();
+                    var sql = MapXml.GetMapSql(name, ref tempParam, db, dbKey);
+
+                    if (dic.Count > 0)
+                        await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
+                    else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.PageAll || IFast.MapType(name).ToStr().ToLower() == AppConfig.Page)
                     {
                         success = true;
                         var pageSize = GetUrlParam(urlParam, "PageSize");
@@ -137,40 +139,39 @@ namespace Fast.Api
 
                         page.PageSize = pageSize.ToInt(0) == 0 ? 10 : pageSize.ToInt(0);
                         page.PageId = pageId.ToInt(0) == 0 ? 1 : pageId.ToInt(0);
-                        var tempParam = param.ToArray();
-                        var sql = MapXml.GetMapSql(name, ref tempParam, db, dbKey);
                         var info = db.GetPageSql(page, sql, tempParam).PageResult;
                         dic.Add("data", info.list);
                         dic.Add("page", info.pModel);
+
                     }
-                }
-                else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.All)
-                {
-                    success = true;
-                    var data = IFast.Query(name, param.ToArray());
-                    dic.Add("data", data);
-                }
-                else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.Write && param.Count > 0)
-                {
-                    var result = IFast.Write(name, param.ToArray());
-                    if (result.IsSuccess)
-                        success = true;
-                    else
-                    {
-                        success = false;
-                        dic.Add("error", result.Message);
-                    }
-                }
-                else
-                {
-                    if (param.Count > 0)
+                    else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.All)
                     {
                         success = true;
-                        var data = IFast.Query(name, param.ToArray());
+                        var data = db.ExecuteSql(sql, tempParam, false).DicList;
                         dic.Add("data", data);
                     }
+                    else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.Write && param.Count > 0)
+                    {
+                        var result = db.ExecuteSql(sql, tempParam, false).writeReturn;
+                        if (result.IsSuccess)
+                            success = true;
+                        else
+                        {
+                            success = false;
+                            dic.Add("error", result.Message);
+                        }
+                    }
                     else
-                        success = false;
+                    {
+                        if (param.Count > 0)
+                        {
+                            success = true;
+                            var data = db.ExecuteSql(sql, tempParam, false).DicList;
+                            dic.Add("data", data);
+                        }
+                        else
+                            success = false;
+                    }
                 }
 
                 dic.Add("success", success);
