@@ -13,6 +13,9 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddFastApi(this IServiceCollection serviceCollection, ConfigApi config)
         {
+            if (string.IsNullOrEmpty(config.dbKey))
+                throw new Exception("config dbkey is not null");
+
             var projectName = Assembly.GetCallingAssembly().GetName().Name;
             if (config.IsResource)
                 FastMap.InstanceMapResource(config.dbKey, config.dbFile, config.mapFile, projectName);
