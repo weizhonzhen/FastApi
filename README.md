@@ -11,6 +11,8 @@ FastMap.InstanceMap(dbKey, "db.json", "map.json");
 
 //new pagepackages
 services.AddFastApi(new ConfigApi { mapFile = "map.json", dbKey = "dbkey", IsResource = true, dbFile = "db.json" });
+	or
+services.AddFastApi(a=> { a.mapFile = "map.json"; a.dbKey = "dbkey"; a.IsResource = true; a.dbFile = "db.json"; });
 ```
 
 2、Configure
