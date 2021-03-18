@@ -19,7 +19,6 @@ in web.congig
 </configuration>
 
 1、ConfigureServices
-```csharp
 //old pagepackages
 services.AddFastApi();
 FastMap.InstanceMap(dbKey, "db.json", "map.json");
