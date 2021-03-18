@@ -7,6 +7,7 @@ in Global.asax Application_Start()
 FastData.FastMap.InstanceMap("dbkey","db.config","SqlMap.config");
 
 in web.congig
+```csharp
 <configuration>
   <system.webServer>
     <modules>
@@ -14,18 +15,19 @@ in web.congig
     </modules>
   </system.webServer>
 </configuration>
-
+```
 # FastApi 
 动态生成读api，只需配数据库连接及xml文件
 
 1、ConfigureServices
+```csharp
 //old pagepackages
 services.AddFastApi();
 FastMap.InstanceMap(dbKey, "db.json", "map.json");
 
 //new pagepackages
 services.AddFastApi(new ConfigApi { mapFile = "map.json", dbKey = "dbkey", IsResource = true, dbFile = "db.json" });
-	or
+    or
 services.AddFastApi(a=> { a.mapFile = "map.json"; a.dbKey = "dbkey"; a.IsResource = true; a.dbFile = "db.json"; });
 ```
 
