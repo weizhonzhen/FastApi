@@ -3,8 +3,10 @@
 
 # Fast.Api.Framework
 动态生成读api，只需配数据库连接及xml文件 net Framework
+```csharp
 in Global.asax Application_Start()
 FastData.FastMap.InstanceMap("dbkey","db.config","SqlMap.config");
+```
 
 in web.congig
 ```csharp
@@ -16,6 +18,56 @@ in web.congig
   </system.webServer>
 </configuration>
 ```
+
+db.config
+```csharp
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <configSections>
+    <section name="DataConfig" type="FastData.Config.DataConfig,FastData" />
+    <section name="RedisConfig" type="FastRedis.Config.RedisConfig,FastRedis" />
+  </configSections>
+  
+  <DataConfig>
+    <Oracle>
+      <Add ConnStr="User Id=qebemr;Password=qebsoft;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=emrdata)));pooling=true;Min Pool Size=5;Max Pool Size=50;" CacheType="redis" SqlErrorType="file" Key="Test" IsOutError="true" IsOutSql="false" />
+    </Oracle>
+  </DataConfig>
+  
+  <RedisConfig WriteServerList="127.0.0.1:6379" ReadServerList="127.0.0.1:6379" MaxWritePoolSize="10" MaxReadPoolSize="50" AutoStart="true" />
+</configuration>
+
+```
+
+SqlMap.config
+```csharp
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <configSections>
+    <section name="MapConfig" type="FastData.Config.MapConfig,FastData"/>
+  </configSections>
+
+  <MapConfig>
+    <SqlMap>
+      <Add File="map/query.xml"/>
+    </SqlMap>
+  </MapConfig>
+</configuration>
+```
+query.xml
+```csharp
+<?xml version="1.0" encoding="utf-8" ?><sqlMap>
+  <select id="Consent" db="Test">
+    select  *  from t_xt_yhb yh where 1=1
+    <dynamic prepend="">
+      <isNotNullOrEmpty prepend=" and " property="gh">yh.gh = :gh</isNotNullOrEmpty>
+      <isNotNullOrEmpty prepend=" " property="OrderBy">order by #OrderBy#</isNotNullOrEmpty>
+    </dynamic>
+  </select>
+</sqlMap>
+```
+
+
 # FastApi 
 动态生成读api，只需配数据库连接及xml文件
 
