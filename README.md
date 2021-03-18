@@ -3,7 +3,6 @@
 
 # Fast.Api.Framework
 动态生成读api，只需配数据库连接及xml文件 net Framework
-```csharp
 in Global.asax Application_Start()
 FastData.FastMap.InstanceMap("dbkey","db.config","SqlMap.config");
 
