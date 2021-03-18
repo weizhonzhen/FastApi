@@ -1,7 +1,5 @@
 ![](https://raw.githubusercontent.com/weizhonzhen/FastApi/master/help.jpg)
 ![](https://raw.githubusercontent.com/weizhonzhen/FastApi/master/xml.jpg)
-# FastApi 
-动态生成读api，只需配数据库连接及xml文件
 
 # Fast.Api.Framework
 动态生成读api，只需配数据库连接及xml文件 net Framework
@@ -17,6 +15,9 @@ in web.congig
     </modules>
   </system.webServer>
 </configuration>
+
+# FastApi 
+动态生成读api，只需配数据库连接及xml文件
 
 1、ConfigureServices
 //old pagepackages
