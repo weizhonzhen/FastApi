@@ -126,6 +126,7 @@ app.UseFastApiMiddleware(a =>
 支持post get 等所有方式请求
 
 
+
 # Fast.Api.Framework
 动态生成读api，只需配数据库连接及xml文件 net Framework
 in Global.asax Application_Start()
