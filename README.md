@@ -124,3 +124,19 @@ app.UseFastApiMiddleware(a =>
 访问的地址：http://127.0.0.1/testurl?name=aa&id=1
 访问的分页地址：http://127.0.0.1/testurl?name=aa&id=1&pageid=1&pagesize=10
 支持post get 等所有方式请求
+
+
+# Fast.Api.Framework
+动态生成读api，只需配数据库连接及xml文件 net Framework
+in Global.asax Application_Start()
+FastData.FastMap.InstanceMap("dbkey","db.config","SqlMap.config");
+
+in web.congig
+<configuration>
+  <system.webServer>
+    <modules>
+      <add name="Fast.Api.Framework.FastApiModule" type="Fast.Api.Framework.FastApiModule,Fast.Api.Framework" />
+    </modules>
+  </system.webServer>
+</configuration>
+
