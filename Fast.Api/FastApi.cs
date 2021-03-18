@@ -58,6 +58,7 @@ namespace Fast.Api
                     {
                         if (!(IFast.MapRequired(name, item).ToLower() == "true" && !string.IsNullOrEmpty(tempParam.Value.ToStr())))
                         {
+                            dic.Add("success", false);
                             dic.Add("error", string.Format("{0}不能为空", item));
                             param.Remove(tempParam);
                             break;
@@ -68,6 +69,7 @@ namespace Fast.Api
                     {
                         if (!(IFast.MapMaxlength(name, item).ToInt(0) >= tempParam.Value.ToStr().Length))
                         {
+                            dic.Add("success", false);
                             dic.Add("error", string.Format("{0}：{1}，最大长度{2}", item, tempParam.Value.ToStr(), IFast.MapMaxlength(name, item)));
                             param.Remove(tempParam);
                             break;
@@ -85,6 +87,7 @@ namespace Fast.Api
                         var checkData = IFast.Query(existsKey, existsListParam.ToArray())?.First() ?? new Dictionary<string, object>();
                         if (checkData.GetValue("count").ToStr().ToInt(0) >= 1)
                         {
+                            dic.Add("success", false);
                             dic.Add("error", string.Format("{0}：{1}已存在", item, tempParam.Value));
                             param.Remove(tempParam);
                             break;
@@ -102,6 +105,7 @@ namespace Fast.Api
                         var checkData = IFast.Query(existsKey, checkListParam.ToArray())?.First() ?? new Dictionary<string, object>();
                         if (checkData.GetValue("count").ToStr().ToInt(0) < 1)
                         {
+                            dic.Add("success", false);
                             dic.Add("error", string.Format("{0}：{1}不存在", item, tempParam.Value));
                             param.Remove(tempParam);
                             break;
@@ -112,6 +116,7 @@ namespace Fast.Api
                     {
                         if (!BaseRegular.IsDate(tempParam.Value.ToStr()))
                         {
+                            dic.Add("success", false);
                             dic.Add("error", string.Format("{0}：{1},不是日期类型", item, tempParam.Value));
                             param.Remove(tempParam);
                             break;
