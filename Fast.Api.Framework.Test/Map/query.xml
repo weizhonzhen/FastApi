@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?><sqlMap>
+  <select id="Consent" db="Test">
+    select  *  from t_xt_yhb yh where 1=1
+    <dynamic prepend="">
+      <isNotNullOrEmpty prepend=" and " property="gh">yh.gh = :gh</isNotNullOrEmpty>
+      <isNotNullOrEmpty prepend=" " property="OrderBy">order by #OrderBy#</isNotNullOrEmpty>
+    </dynamic>
+  </select>
+</sqlMap>
