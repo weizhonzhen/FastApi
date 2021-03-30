@@ -11,12 +11,16 @@ using System.Web;
 using FastData.Core.Repository;
 using FastData.Core.Context;
 using FastData.Core.Base;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Fast.Api
 {
     public class FastApi : IFastApi
     {
-        public async Task ContentAsync(HttpContext context, IFastRepository IFast, bool IsResource, string dbFile = "db.json")
+        public async Task ContentAsync(HttpContext context, IFastRepository IFast ,ICompositeViewEngine engine, bool IsResource, string dbFile = "db.json")
         {
             var name = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
 
@@ -24,6 +28,7 @@ namespace Fast.Api
             var success = true;
             var dic = new Dictionary<string, object>();
             var dbKey = IFast.MapDb(name).ToStr();
+            var pageInfo = new PageResult();
 
             context.Response.StatusCode = 200;
             context.Response.ContentType = "application/Json";
@@ -144,10 +149,12 @@ namespace Fast.Api
 
                         page.PageSize = pageSize.ToInt(0) == 0 ? 10 : pageSize.ToInt(0);
                         page.PageId = pageId.ToInt(0) == 0 ? 1 : pageId.ToInt(0);
-                        var info = db.GetPageSql(page, sql, tempParam).PageResult;
-                        dic.Add("data", info.list);
-                        dic.Add("page", info.pModel);
-
+                        pageInfo = db.GetPageSql(page, sql, tempParam).PageResult;
+                        if (IFast.MapView(name).ToStr() == "")
+                        {
+                            dic.Add("data", pageInfo.list);
+                            dic.Add("page", pageInfo.pModel);
+                        }
                     }
                     else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.All)
                     {
@@ -179,8 +186,44 @@ namespace Fast.Api
                     }
                 }
 
-                dic.Add("success", success);
-                await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
+                
+                if (IFast.MapView(name).ToStr() != "")
+                {
+                    context.Response.ContentType = "text/html;charset=utf-8";
+                    var viewName = IFast.MapView(name).ToStr();
+                    var viewResult = engine.GetView("~/", viewName, true);
+
+                    if (!viewResult.Success)
+                        await context.Response.WriteAsync("view:" + viewName + " not exists", Encoding.UTF8).ConfigureAwait(false);
+                    else
+                    {
+                        using (var output = new StringWriter())
+                        {
+                            var viewContext = new ViewContext()
+                            {
+                                HttpContext = context,
+                                Writer = output,
+                                View = viewResult.View,
+                                RouteData = new Microsoft.AspNetCore.Routing.RouteData(){},
+                                FormContext = new FormContext(),
+                                ActionDescriptor = new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor()
+                            };
+
+                            if (IFast.MapType(name).ToStr().ToLower() == AppConfig.PageAll || IFast.MapType(name).ToStr().ToLower() == AppConfig.Page)
+                                viewContext.ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()) { Model = pageInfo };
+                            else
+                                viewContext.ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()) { Model = dic };
+
+                            await viewResult.View.RenderAsync(viewContext).ConfigureAwait(false);
+                            await context.Response.WriteAsync(output.ToString(), Encoding.UTF8).ConfigureAwait(false);
+                        }
+                    }
+                }
+                else
+                {
+                    dic.Add("success", success);
+                    await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
+                }
             }
         }
 
@@ -254,5 +297,4 @@ namespace Fast.Api
         //接口界面不显示
         public static readonly string Hide = "hide";
     }
-
 }

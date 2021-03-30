@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>https://github.com/weizhonzhen/FastApi</Description>
     <PackageProjectUrl>https://github.com/weizhonzhen/FastApi</PackageProjectUrl>
-    <Version>1.3.9.2</Version>
+    <Version>1.6.1</Version>
     <PackageIconUrl>https://en.gravatar.com/userimage/151376774/1cba1ca23219db268cc5ed8abde11775.png</PackageIconUrl>
   </PropertyGroup>
 
@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fast.Data.Core" Version="2.3.3" />
-    <PackageReference Include="Fast.Untility.Core" Version="1.3.91" />
+    <PackageReference Include="Fast.Data.Core" Version="2.4.5" />
+    <PackageReference Include="Fast.Untility.Core" Version="1.3.94" />
   </ItemGroup>
 
 </Project>

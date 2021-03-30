@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FastData.Core.Repository;
 using FastUntility.Core.Base;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 
 namespace Fast.Api
 {
@@ -17,7 +18,7 @@ namespace Fast.Api
             option = _option;
         }
 
-        public Task InvokeAsync(HttpContext context, IFastApi response, IFastRepository IFast)
+        public Task InvokeAsync(HttpContext context, IFastApi response, IFastRepository IFast, ICompositeViewEngine engine)
         {
             var name = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
 
@@ -28,9 +29,9 @@ namespace Fast.Api
                 return next(context);
 
             if (option != null)
-                return response.ContentAsync(context, IFast, option.IsResource, option.dbFile);
+                return response.ContentAsync(context, IFast, engine, option.IsResource, option.dbFile);
             else
-                return response.ContentAsync(context, IFast);
+                return response.ContentAsync(context, IFast, engine);
         }
     }
 }
