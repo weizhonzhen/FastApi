@@ -187,7 +187,9 @@ app.UseFastApiMiddleware(a =>
 	existsmap 是验证是否已经存在 不存在是通过验证
 	checkmap 是验证是否存在，存在通过验证
 
-view 直接返回视图
+view 直接返回视图 
+	type 为 page or pageall 返回 model 为FastUntility.Core.Page.PageResult
+	type 不是page 和 pageall  返回 model 为 Dictionary<string, object>
 
 查看所有接口地址：http://127.0.0.1/help
 配置接口地址：http://127.0.0.1/xml
