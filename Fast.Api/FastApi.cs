@@ -27,6 +27,7 @@ namespace Fast.Api
             var urlParam = HttpUtility.UrlDecode(GetUrlParam(context));
             var success = true;
             var dic = new Dictionary<string, object>();
+            var data = new List<Dictionary<string, object>>();
             var dbKey = IFast.MapDb(name).ToStr();
             var pageInfo = new PageResult();
 
@@ -159,7 +160,7 @@ namespace Fast.Api
                     else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.All)
                     {
                         success = true;
-                        var data = db.ExecuteSql(sql, tempParam, false).DicList;
+                        data = db.ExecuteSql(sql, tempParam, false).DicList;
                         dic.Add("data", data);
                     }
                     else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.Write && param.Count > 0)
@@ -178,7 +179,7 @@ namespace Fast.Api
                         if (param.Count > 0)
                         {
                             success = true;
-                            var data = db.ExecuteSql(sql, tempParam, false).DicList;
+                            data = db.ExecuteSql(sql, tempParam, false).DicList;
                             dic.Add("data", data);
                         }
                         else
@@ -212,7 +213,7 @@ namespace Fast.Api
                             if (IFast.MapType(name).ToStr().ToLower() == AppConfig.PageAll || IFast.MapType(name).ToStr().ToLower() == AppConfig.Page)
                                 viewContext.ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()) { Model = pageInfo };
                             else
-                                viewContext.ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()) { Model = dic };
+                                viewContext.ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()) { Model = data };
 
                             await viewResult.View.RenderAsync(viewContext).ConfigureAwait(false);
                             await context.Response.WriteAsync(output.ToString(), Encoding.UTF8).ConfigureAwait(false);
