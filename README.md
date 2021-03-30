@@ -189,7 +189,7 @@ app.UseFastApiMiddleware(a =>
 
 view 直接返回视图 
 	type 为 page or pageall 返回 model 为FastUntility.Core.Page.PageResult
-	type 不是page 和 pageall  返回 model 为 Dictionary<string, object>
+	type 不是page 和 pageall  返回 model 为 List<Dictionary<string, object>>
 
 查看所有接口地址：http://127.0.0.1/help
 配置接口地址：http://127.0.0.1/xml
