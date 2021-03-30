@@ -161,7 +161,7 @@ app.UseFastApiMiddleware(a =>
     )
   </insert>
   
-    <select id="CheckTestId" db="Api">
+    <select id="CheckTestId" db="Api" view="~/views/home/index.cshtml">
     select count(0) count from aa
     <dynamic prepend=" where 1=1 ">
       <isPropertyAvailable prepend=" and " property="id">id=:id</isPropertyAvailable>
@@ -186,7 +186,9 @@ app.UseFastApiMiddleware(a =>
 	maxlength 是验证最大长度 
 	existsmap 是验证是否已经存在 不存在是通过验证
 	checkmap 是验证是否存在，存在通过验证
-	
+
+view 直接返回视图
+
 查看所有接口地址：http://127.0.0.1/help
 配置接口地址：http://127.0.0.1/xml
 访问的地址：http://127.0.0.1/testurl?name=aa&id=1
