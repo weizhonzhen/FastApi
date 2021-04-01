@@ -190,7 +190,6 @@ namespace Fast.Api
                 
                 if (IFast.MapView(name).ToStr() != "")
                 {
-                    context.Response.ContentType = "text/html;charset=utf-8";
                     var viewName = IFast.MapView(name).ToStr();
                     var viewResult = engine.GetView("~/", viewName, true);
 
@@ -198,6 +197,7 @@ namespace Fast.Api
                         await context.Response.WriteAsync("view:" + viewName + " not exists", Encoding.UTF8).ConfigureAwait(false);
                     else
                     {
+                        context.Response.ContentType = "text/html;charset=utf-8";
                         using (var output = new StringWriter())
                         {
                             var viewContext = new ViewContext()
