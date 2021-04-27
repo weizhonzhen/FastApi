@@ -8,7 +8,7 @@ in Global.asax Application_Start()
 FastData.FastMap.InstanceMap("dbkey","db.config","SqlMap.config");
 ```
 
-in web.congig
+in web.config
 ```csharp
 <configuration>
   <system.webServer>
