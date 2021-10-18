@@ -52,8 +52,8 @@ namespace Fast.Api
 
                 foreach (var item in IFast.MapParam(name))
                 {
-                    var checkKey = IFast.MapCheckMap(name, item);
-                    var existsKey = IFast.MapExistsMap(name, item);
+                    var checkKey = IFast.MapCheck(name, item);
+                    var existsKey = IFast.MapExists(name, item);
                     var tempParam = DbProviderFactories.GetFactory(IFast.MapDb(name), IsResource, dbFile).CreateParameter();
 
                     tempParam.ParameterName = item;
@@ -160,12 +160,12 @@ namespace Fast.Api
                     else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.All)
                     {
                         success = true;
-                        data = db.ExecuteSql(sql, tempParam, false).DicList;
+                        data = db.ExecuteSqlList(sql, tempParam, false).DicList;
                         dic.Add("data", data);
                     }
                     else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.Write && param.Count > 0)
                     {
-                        var result = db.ExecuteSql(sql, tempParam, false).writeReturn;
+                        var result = db.ExecuteSqlList(sql, tempParam, false).writeReturn;
                         if (result.IsSuccess)
                             success = true;
                         else
@@ -179,7 +179,7 @@ namespace Fast.Api
                         if (param.Count > 0)
                         {
                             success = true;
-                            data = db.ExecuteSql(sql, tempParam, false).DicList;
+                            data = db.ExecuteSqlList(sql, tempParam, false).DicList;
                             dic.Add("data", data);
                         }
                         else
