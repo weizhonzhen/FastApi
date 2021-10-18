@@ -36,6 +36,8 @@ namespace Fast.Api.Framework
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "application/Json";
 
+                var data = new List<Dictionary<string, object>>();
+                var pageInfo = new PageResult();
                 var dbKey = FastMap.MapDb(key).ToStr();
                 var type = FastMap.MapType(key).ToStr().ToLower();
                 var config = FastMap.DbConfig(dbKey);
@@ -52,8 +54,8 @@ namespace Fast.Api.Framework
                     temp.ParameterName = item.ToStr();
                     temp.Value = url.Get(item.ToStr());
                     param.Add(temp);
-                    var existsKey = FastMap.MapExistsMap(key, temp.ParameterName);
-                    var checkKey = FastMap.MapCheckMap(key, temp.ParameterName);
+                    var existsKey = FastMap.MapExists(key, temp.ParameterName);
+                    var checkKey = FastMap.MapCheck(key, temp.ParameterName);
 
                     //required
                     if (!string.IsNullOrEmpty(FastMap.MapRequired(key, temp.ParameterName)))
@@ -151,20 +153,20 @@ namespace Fast.Api.Framework
 
                             page.PageSize = pageSize == 0 ? 10 : pageSize;
                             page.PageId = pageId == 0 ? 1 : pageId;
-                            var info = db.GetPageSql(page, sql, tempParam).PageResult;
-                            dic.Add("data", info.list);
-                            dic.Add("page", info.pModel);
+                            pageInfo = db.GetPageSql(page, sql, tempParam).PageResult;
+                            dic.Add("data", pageInfo.list);
+                            dic.Add("page", pageInfo.pModel);
 
                         }
                         else if (type == AppConfig.All)
                         {
                             success = true;
-                            var data = db.ExecuteSql(sql, tempParam, false).DicList;
+                            data = db.ExecuteSqlList(sql, tempParam, false).DicList;
                             dic.Add("data", data);
                         }
                         else if (type == AppConfig.Write && param.Count > 0)
                         {
-                            var result = db.ExecuteSql(sql, tempParam, false).writeReturn;
+                            var result = db.ExecuteSqlList(sql, tempParam, false).writeReturn;
                             if (result.IsSuccess)
                                 success = true;
                             else
@@ -178,7 +180,7 @@ namespace Fast.Api.Framework
                             if (param.Count > 0)
                             {
                                 success = true;
-                                var data = db.ExecuteSql(sql, tempParam, false).DicList;
+                                data = db.ExecuteSqlList(sql, tempParam, false).DicList;
                                 dic.Add("data", data);
                             }
                             else
@@ -187,28 +189,30 @@ namespace Fast.Api.Framework
                     }
                 }
 
-                dic.Add("success", success);
-                context.Response.Write(BaseJson.ModelToJson(dic));
-                context.Response.End();
+                //if (FastMap.MapView(key).ToStr() != "")
+                //{
+                //    context.Response.ContentType = "text/html;charset=utf-8";
+                //}
+                //else
+                {
+                    dic.Add("success", success);
+                    context.Response.Write(BaseJson.ModelToJson(dic));
+                    context.Response.End();
+                }
             }
         }
     }
 
     public static class AppConfig
     {
-        //读 分页参数必须传
         public static readonly string Page = "page";
 
-        //读 分页参数可以不传
         public static readonly string PageAll = "pageall";
 
-        //读 必须传参数
         public static readonly string Param = "param";
 
-        //读 参数可以不传
         public static readonly string All = "all";
 
-        //写
         public static readonly string Write = "write";
     }
 }
