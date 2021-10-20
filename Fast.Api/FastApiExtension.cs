@@ -4,7 +4,6 @@ using FastData.Core.Repository;
 using FastUntility.Core;
 using Microsoft.AspNetCore.Builder;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -38,27 +37,5 @@ namespace Microsoft.Extensions.DependencyInjection
             optionsAction(options);
             return app.UseMiddleware<FastApiHandler>(options);
         }
-    }
-
-    public class ConfigApi
-    {
-        public bool IsResource { get; set; }
-
-        public string dbKey { get; set; }
-
-        public string dbFile { get; set; } = "db.json";
-
-        public string mapFile { get; set; } = "map.json";
-    }
-
-    public class ConfigOption
-    {
-        public bool IsAlone { get; set; }
-
-        public bool IsResource { get; set; }
-
-        public List<string> FilterUrl { get; set; } = new List<string>();
-
-        public string dbFile { get; set; } = "db.json";
     }
 }
