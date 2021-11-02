@@ -5,6 +5,7 @@ using FastUntility.Core;
 using Microsoft.AspNetCore.Builder;
 using System;
 using System.Reflection;
+using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -22,9 +23,17 @@ namespace Microsoft.Extensions.DependencyInjection
             serviceCollection.AddTransient<IFastApi, FastApi>();
             ServiceContext.Init(new ServiceEngine(serviceCollection.BuildServiceProvider()));
 
-            var projectName = Assembly.GetCallingAssembly().GetName().Name;
+            Assembly.GetCallingAssembly().GetReferencedAssemblies().ToList().ForEach(a => {
+                try
+                {
+                    if (!AppDomain.CurrentDomain.GetAssemblies().ToList().Exists(b => b.GetName().Name == a.Name))
+                        Assembly.Load(a.Name);
+                }
+                catch (Exception ex) { }
+            });
+
             if (config.IsResource)
-                FastMap.InstanceMapResource(config.dbKey, config.dbFile, config.mapFile, projectName);
+                FastMap.InstanceMapResource(config.dbKey, config.dbFile, config.mapFile, Assembly.GetCallingAssembly().GetName().Name);
             else
                 FastMap.InstanceMap(config.dbKey, config.dbFile, config.mapFile);
 
