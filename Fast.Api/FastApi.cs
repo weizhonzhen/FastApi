@@ -20,7 +20,7 @@ namespace Fast.Api
 {
     public class FastApi : IFastApi
     {
-        public async Task ContentAsync(HttpContext context, IFastRepository IFast ,ICompositeViewEngine engine, bool IsResource, string dbFile = "db.json")
+        public async Task ContentAsync(HttpContext context, IFastRepository IFast, ICompositeViewEngine engine, bool IsResource, string dbFile = "db.json")
         {
             var name = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
 
@@ -62,7 +62,7 @@ namespace Fast.Api
 
                     if (!string.IsNullOrEmpty(IFast.MapRequired(name, item)))
                     {
-                        if (!(IFast.MapRequired(name, item).ToLower() == "true" && !string.IsNullOrEmpty(tempParam.Value.ToStr())))
+                        if (!(string.Compare(IFast.MapRequired(name, item), "true", false) == 0 && !string.IsNullOrEmpty(tempParam.Value.ToStr())))
                         {
                             dic.Add("success", false);
                             dic.Add("error", string.Format("{0}不能为空", item));
@@ -118,7 +118,7 @@ namespace Fast.Api
                         }
                     }
 
-                    if (IFast.MapDate(name, item).ToStr().ToLower() == "true")
+                    if (string.Compare(IFast.MapDate(name, item).ToStr(), "true", false) == 0)
                     {
                         if (!BaseRegular.IsDate(tempParam.Value.ToStr()))
                         {
@@ -141,7 +141,8 @@ namespace Fast.Api
 
                     if (dic.Count > 0)
                         await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
-                    else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.PageAll || IFast.MapType(name).ToStr().ToLower() == AppConfig.Page)
+                    else if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.PageAll, false) == 0 ||
+                        string.Compare(IFast.MapType(name).ToStr(), AppConfig.Page, false) == 0)
                     {
                         success = true;
                         var pageSize = GetUrlParam(urlParam, "PageSize");
@@ -157,13 +158,13 @@ namespace Fast.Api
                             dic.Add("page", pageInfo.pModel);
                         }
                     }
-                    else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.All)
+                    else if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.All, false) == 0)
                     {
                         success = true;
                         data = db.ExecuteSqlList(sql, tempParam, false).DicList;
                         dic.Add("data", data);
                     }
-                    else if (IFast.MapType(name).ToStr().ToLower() == AppConfig.Write && param.Count > 0)
+                    else if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.Write, false) == 0 && param.Count > 0)
                     {
                         var result = db.ExecuteSqlList(sql, tempParam, false).writeReturn;
                         if (result.IsSuccess)
@@ -187,7 +188,7 @@ namespace Fast.Api
                     }
                 }
 
-                
+
                 if (IFast.MapView(name).ToStr() != "")
                 {
                     var viewName = IFast.MapView(name).ToStr();
@@ -205,12 +206,13 @@ namespace Fast.Api
                                 HttpContext = context,
                                 Writer = output,
                                 View = viewResult.View,
-                                RouteData = new Microsoft.AspNetCore.Routing.RouteData(){},
+                                RouteData = new Microsoft.AspNetCore.Routing.RouteData() { },
                                 FormContext = new FormContext(),
                                 ActionDescriptor = new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor()
                             };
 
-                            if (IFast.MapType(name).ToStr().ToLower() == AppConfig.PageAll || IFast.MapType(name).ToStr().ToLower() == AppConfig.Page)
+                            if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.PageAll, false) == 0 ||
+                                string.Compare(IFast.MapType(name).ToStr(), AppConfig.Page, false) == 0)
                                 viewContext.ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()) { Model = pageInfo };
                             else
                                 viewContext.ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()) { Model = data };
@@ -263,13 +265,13 @@ namespace Fast.Api
             {
                 foreach (var temp in urlParam.Split('&'))
                 {
-                    if (temp.IndexOf('=') > 0 && temp.Split('=')[0].ToLower() == key.ToLower())
+                    if (temp.IndexOf('=') > 0 && string.Compare(temp.Split('=')[0], key, false) == 0)
                         return temp.Split('=')[1];
                 }
             }
             else
             {
-                if (urlParam.IndexOf('=') > 0 && urlParam.Split('=')[0].ToLower() == key.ToLower())
+                if (urlParam.IndexOf('=') > 0 && string.Compare(urlParam.Split('=')[0], key, false) == 0)
                     return urlParam.Split('=')[1];
             }
 
