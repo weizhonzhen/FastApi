@@ -39,7 +39,7 @@ namespace Fast.Api.Framework
                 var data = new List<Dictionary<string, object>>();
                 var pageInfo = new PageResult();
                 var dbKey = FastMap.MapDb(key).ToStr();
-                var type = FastMap.MapType(key).ToStr().ToLower();
+                var type = FastMap.MapType(key).ToStr();
                 var config = FastMap.DbConfig(dbKey);
                 var url = context.Request.Form;
                 if (url.Count == 0)
