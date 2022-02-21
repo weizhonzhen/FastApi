@@ -15,7 +15,7 @@ namespace Fast.Api.Framework
     {
         public void Dispose()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void Init(HttpApplication context)
@@ -117,7 +117,7 @@ namespace Fast.Api.Framework
                     }
 
                     //date
-                    if (FastMap.MapDate(key, temp.ParameterName).ToStr().ToLower() == "true")
+                    if (string.Compare( FastMap.MapDate(key, temp.ParameterName).ToStr(), "true",false)==0)
                     {
                         if (!BaseRegular.IsDate(temp.Value.ToStr()))
                         {
