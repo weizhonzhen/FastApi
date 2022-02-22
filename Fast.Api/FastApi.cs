@@ -62,7 +62,7 @@ namespace Fast.Api
 
                     if (!string.IsNullOrEmpty(IFast.MapRequired(name, item)))
                     {
-                        if (!(string.Compare(IFast.MapRequired(name, item), "true", false) == 0 && !string.IsNullOrEmpty(tempParam.Value.ToStr())))
+                        if (!(string.Compare(IFast.MapRequired(name, item), "true", true) == 0 && !string.IsNullOrEmpty(tempParam.Value.ToStr())))
                         {
                             dic.Add("success", false);
                             dic.Add("error", string.Format("{0}不能为空", item));
@@ -118,7 +118,7 @@ namespace Fast.Api
                         }
                     }
 
-                    if (string.Compare(IFast.MapDate(name, item).ToStr(), "true", false) == 0)
+                    if (string.Compare(IFast.MapDate(name, item).ToStr(), "true", true) == 0)
                     {
                         if (!BaseRegular.IsDate(tempParam.Value.ToStr()))
                         {
@@ -141,8 +141,8 @@ namespace Fast.Api
 
                     if (dic.Count > 0)
                         await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
-                    else if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.PageAll, false) == 0 ||
-                        string.Compare(IFast.MapType(name).ToStr(), AppConfig.Page, false) == 0)
+                    else if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.PageAll, true) == 0 ||
+                        string.Compare(IFast.MapType(name).ToStr(), AppConfig.Page, true) == 0)
                     {
                         success = true;
                         var pageSize = GetUrlParam(urlParam, "PageSize");
@@ -158,13 +158,13 @@ namespace Fast.Api
                             dic.Add("page", pageInfo.pModel);
                         }
                     }
-                    else if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.All, false) == 0)
+                    else if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.All, true) == 0)
                     {
                         success = true;
                         data = db.ExecuteSqlList(sql, tempParam, false).DicList;
                         dic.Add("data", data);
                     }
-                    else if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.Write, false) == 0 && param.Count > 0)
+                    else if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.Write, true) == 0 && param.Count > 0)
                     {
                         var result = db.ExecuteSqlList(sql, tempParam, false).writeReturn;
                         if (result.IsSuccess)
@@ -211,8 +211,8 @@ namespace Fast.Api
                                 ActionDescriptor = new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor()
                             };
 
-                            if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.PageAll, false) == 0 ||
-                                string.Compare(IFast.MapType(name).ToStr(), AppConfig.Page, false) == 0)
+                            if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.PageAll, true) == 0 ||
+                                string.Compare(IFast.MapType(name).ToStr(), AppConfig.Page, true) == 0)
                                 viewContext.ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()) { Model = pageInfo };
                             else
                                 viewContext.ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()) { Model = data };
@@ -265,13 +265,13 @@ namespace Fast.Api
             {
                 foreach (var temp in urlParam.Split('&'))
                 {
-                    if (temp.IndexOf('=') > 0 && string.Compare(temp.Split('=')[0], key, false) == 0)
+                    if (temp.IndexOf('=') > 0 && string.Compare(temp.Split('=')[0], key, true) == 0)
                         return temp.Split('=')[1];
                 }
             }
             else
             {
-                if (urlParam.IndexOf('=') > 0 && string.Compare(urlParam.Split('=')[0], key, false) == 0)
+                if (urlParam.IndexOf('=') > 0 && string.Compare(urlParam.Split('=')[0], key, true) == 0)
                     return urlParam.Split('=')[1];
             }
 
