@@ -117,7 +117,7 @@ namespace Fast.Api.Framework
                     }
 
                     //date
-                    if (string.Compare( FastMap.MapDate(key, temp.ParameterName).ToStr(), "true",false)==0)
+                    if (string.Compare( FastMap.MapDate(key, temp.ParameterName).ToStr(), "true", true) ==0)
                     {
                         if (!BaseRegular.IsDate(temp.Value.ToStr()))
                         {
@@ -146,7 +146,7 @@ namespace Fast.Api.Framework
                         var tempParam = param.ToArray();
                         var sql = MapXml.GetMapSql(key, ref tempParam, db, dbKey);
 
-                        if (type == AppConfig.PageAll || type == AppConfig.Page)
+                        if (string.Compare( type , AppConfig.PageAll, true) ==0 || string.Compare( type , AppConfig.Page, true) ==0)
                         {
                             success = true;
                             var page = new PageModel();
@@ -158,13 +158,13 @@ namespace Fast.Api.Framework
                             dic.Add("page", pageInfo.pModel);
 
                         }
-                        else if (type == AppConfig.All)
+                        else if (string.Compare( type , AppConfig.All, true) ==0)
                         {
                             success = true;
                             data = db.ExecuteSqlList(sql, tempParam, false).DicList;
                             dic.Add("data", data);
                         }
-                        else if (type == AppConfig.Write && param.Count > 0)
+                        else if (string.Compare( type , AppConfig.Write, true) ==0 && param.Count > 0)
                         {
                             var result = db.ExecuteSqlList(sql, tempParam, false).writeReturn;
                             if (result.IsSuccess)
