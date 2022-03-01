@@ -19,8 +19,8 @@ namespace Microsoft.Extensions.DependencyInjection
             if (string.IsNullOrEmpty(config.dbKey))
                 throw new Exception("config dbkey is not null");
 
-            serviceCollection.AddTransient<IFastRepository, FastRepository>();
-            serviceCollection.AddTransient<IFastApi, FastApi>();
+            serviceCollection.AddSingleton<IFastRepository, FastRepository>();
+            serviceCollection.AddSingleton<IFastApi, FastApi>();
             ServiceContext.Init(new ServiceEngine(serviceCollection.BuildServiceProvider()));
 
             Assembly.GetCallingAssembly().GetReferencedAssemblies().ToList().ForEach(a => {
