@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using FastData.Core.Repository;
 using FastUntility.Core.Base;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 
 namespace Fast.Api
@@ -24,10 +23,10 @@ namespace Fast.Api
 
             if (option != null && option.FilterUrl.Exists(a => a.ToLower() == name) || name == "")
                 return next(context);
-            
+
             if (option != null && !option.IsAlone && (!IFast.IsExists(name) || IFast.MapDb(name).ToStr() == ""))
                 return next(context);
-
+      
             if (option != null)
                 return response.ContentAsync(context, IFast, engine, option.IsResource, option.dbFile);
             else

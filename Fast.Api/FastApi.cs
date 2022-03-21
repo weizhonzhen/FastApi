@@ -238,18 +238,19 @@ namespace Fast.Api
         /// <returns></returns>
         private string GetUrlParam(HttpContext context)
         {
-            using (var content = new StreamReader(context.Request.Body))
+            var param = context.Request.QueryString.Value;
+            if (context.Request.ContentLength != null)
             {
-                var param = context.Request.QueryString.Value;
+                using (var content = new StreamReader(context.Request.Body))
+                {
+                    if (string.IsNullOrEmpty(param))
+                        param = content.ReadToEnd();
 
-                if (string.IsNullOrEmpty(param))
-                    param = content.ReadToEnd();
-
-                if (!string.IsNullOrEmpty(param) && param.Substring(0, 1) == "?")
-                    param = param.Substring(1, param.Length - 1);
-
-                return param;
+                    if (!string.IsNullOrEmpty(param) && param.Substring(0, 1) == "?")
+                        param = param.Substring(1, param.Length - 1);
+                }
             }
+            return param;
         }
         #endregion
 
