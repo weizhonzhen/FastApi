@@ -1,5 +1,4 @@
-﻿using FastData.Core;
-using FastUntility.Core.Base;
+﻿using FastUntility.Core.Base;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -21,9 +20,7 @@ namespace Fast.Api.Mvc
 
             services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
             services.AddResponseCompression();
-            services.AddFastApi();
-
-            FastMap.InstanceMap();
+            services.AddFastApi(a => { a.IsResource = false; a.dbFile = "db.json"; a.mapFile = "map.json"; a.dbKey = "Emr"; });
 
             services.AddCors(options =>
             {
@@ -54,19 +51,24 @@ namespace Fast.Api.Mvc
             });
 
             app.UseStaticFiles(); 
+           
             app.UseFastApiMiddleware(a =>
             {
+                a.IsResource = false;
                 a.IsAlone = true;
                 a.FilterUrl.Add("help");
                 a.FilterUrl.Add("xml");
                 a.FilterUrl.Add("del");
             });
-            app.UseMvc(routes =>
+
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
-                name: "default",
-                template: "{action=index}/{id?}");
+                endpoints.MapControllerRoute(
+                   name: "default",
+                   pattern: "{action=Index}/{id?}");
             });
+
         }
     }
 }
