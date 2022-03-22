@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Fast.Api.RazorPage.Filter;
-using FastData.Core;
 using FastUntility.Core.Base;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -28,26 +27,28 @@ namespace Fast.Api.RazorPage
             Encoding encoding = Encoding.GetEncoding("GB2312");
             services.AddResponseCompression();
 
-            services.AddFastApi();
-            FastMap.InstanceMap();
+            services.AddFastApi(a => { a.IsResource = false; a.dbFile = "db.json"; a.mapFile = "map.json"; a.dbKey = "Api"; });
 
             services.AddCors(options =>
             {
                 options.AddPolicy("any", builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
             });
-            
-            services.AddMvc(options=> { options.Filters.Add(new CheckFilter()); }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-            .AddRazorPagesOptions(o => { 
+
+            services.AddRazorPages(o =>
+            {
                 o.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute());
+                o.Conventions.AddPageRoute("/Help", "");
                 o.RootDirectory = "/Pages";
+            }).AddMvcOptions(options => { 
+                options.Filters.Add(new CheckFilter());
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseExceptionHandler(error =>
             {
-                error.Use(async (context, next) =>
+                error.Run(async context =>
                 {
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                     if (contextFeature != null)
@@ -67,11 +68,17 @@ namespace Fast.Api.RazorPage
             app.UseFastApiMiddleware(a =>
             {
                 a.IsAlone = true;
+                a.IsResource = false;
                 a.FilterUrl.Add("help");
                 a.FilterUrl.Add("xml");
                 a.FilterUrl.Add("del");
             });
-            app.UseMvc();
+
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+            });
         }
     }
 }
