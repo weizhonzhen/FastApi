@@ -1,0 +1,19 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@namespace Fast.Api.Blazor.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<html>
+<head>
+    <title>动态生成接口文档(FastApi)</title>
+    <script src="/Scripts/jquery-min.js"></script>
+    <script src="/Scripts/codemirror.js"></script>
+    <script src="/Scripts/xml.js"></script>
+    <script src="/Scripts/help.js"></script>
+    <link href="/Content/home.css" rel="stylesheet" />
+    <link href="/Content/codemirror.css" rel="stylesheet" />
+</head>
+<body>
+    @RenderBody()
+     <script src="_framework/blazor.server.js"></script>
+</body>
+</html>
