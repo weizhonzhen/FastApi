@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+<insert id="Write/Test" db="Api" type="write">
+    insert into aa values (
+    <dynamic prepend="">
+      <isPropertyAvailable prepend="" property="id" existsmap="CheckTestId">:id,</isPropertyAvailable>
+      <isPropertyAvailable prepend="" property="addTime" date="true" required="true">:addTime,</isPropertyAvailable>
+      <isPropertyAvailable prepend="" property="key">:key,</isPropertyAvailable>
+      <isPropertyAvailable prepend="" property="a" date="true" required="true">:a,</isPropertyAvailable>
+      <isPropertyAvailable prepend="" property="b" maxlength="10">:b</isPropertyAvailable>
+    </dynamic>
+    )
+  </insert>
+
+  <select id="CheckTestId" db="Api" type="hide">
+    select count(0) count from aa
+    <dynamic prepend=" where 1=1 ">
+      <isPropertyAvailable prepend=" and " property="id">id=:id</isPropertyAvailable>
+      <choose property="OrgId">
+        <condition prepend=" and " property="OrgId == 4022">(br.kid=3057 or br.kid=4022)</condition>
+        <condition prepend=" and " property="OrgId == 3057">(br.kid=3057 or br.kid=4022)</condition>
+        <condition prepend=" and " property="OrgId == 4268">(br.kid=4268 or br.kid=103)</condition>
+        <condition prepend=" and " property="OrgId == 4269">(br.kid=4269 or br.kid=103)</condition>
+        <condition prepend=" and " property="OrgId == 4270">(br.kid=4270 or br.kid=103)</condition>
+        <condition prepend=" and " property="OrgId == 104">(br.kid=4018 or br.kid=104)</condition>
+        <condition prepend=" and " property="OrgId == 113">(br.kid=4018 or br.kid=113)</condition>
+        <condition prepend=" and " property="OrgId != 0">br.kid=:OrgId</condition>
+      </choose>
+    </dynamic>
+  </select>
+  
+  <select id="histest" db="his">
+    select cfsb,brxm from ms_cf01 where 1=1
+    <dynamic prepend="">
+      <isNotNullOrEmpty prepend=" and " property="brid">brid = :brid</isNotNullOrEmpty>
+    </dynamic>
+    <foreach name="test" field="cfsb">
+      select ypxh from ms_cf02 where cfsb=:cfsb
+    </foreach>
+  </select>  
+</sqlMap>
