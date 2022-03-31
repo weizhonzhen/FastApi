@@ -1,5 +1,10 @@
 global using FastAop.Core;
 global using FastUntility.Core.Base;
+global using FastUntility.Core;
+global using FastData.Core.Repository;
+global using System.Text;
+global using FastData.Core;
+global using Fast.Api.Blazor.Service;
 using Fast.Api.Blazor.Filter;
 using Microsoft.AspNetCore.Diagnostics;
 
@@ -7,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor(); 
+builder.Services.AddSignalR();
 builder.Services.AddFastAop("Fast.Api.Blazor.Service", typeof(FastServiceFilter));
 
 builder.Services.AddFastApi(a =>
