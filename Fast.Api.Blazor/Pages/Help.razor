@@ -81,9 +81,9 @@
 </div>
 
 @code{
-    public async Task TitleClick(string id) => await js.InvokeVoidAsync("methods.titleClick", new object[] { id }).AsTask();
-    public async Task ParamterClick(string id) => await js.InvokeVoidAsync("methods.paramterClick", new object[] { id }).AsTask();
-    public async Task SubmitClick(string id, string result, string url) => await js.InvokeVoidAsync("methods.submitClick", new object[] { id, result, url }).AsTask();
+    public async Task TitleClick(string id) => await js.InvokeVoidAsync("methods.Help_TitleClick", new object[] { id }).AsTask();
+    public async Task ParamterClick(string id) => await js.InvokeVoidAsync("methods.Help_ParamterClick", new object[] { id }).AsTask();
+    public async Task SubmitClick(string id, string result, string url) => await js.InvokeVoidAsync("methods.Help_SubmitClick", new object[] { id, result, url }).AsTask();
 
     public static string GetType(string name, IFastRepository IFast)
     {

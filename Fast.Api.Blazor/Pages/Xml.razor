@@ -1,6 +1,70 @@
 ﻿@page "/xml"
+@inject IJSRuntime js
+<h3 style="color:red;text-align:center;">动态生成接口文档(FastApi)</h3>
+<div style="float:left;width:15%;padding-left:10%;">
+    <table class="table" cellspacing="0" spellcheck="0">
+        <thead><tr><td align="center"><button onclick="@(async()=>(AddClick()))">增加</button></td></tr></thead>
+        <tbody>
+            @{
+                foreach (var item in Map())
+                {
+                    <tr onclick="@(async ()=> TitleClick())"><td data-name="@item.Key.Replace("map/","")" data-value="@item.Value">@item.Key</td></tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<div style="float:left;width:75%;">
+    文件名：<input id="name" style="margin-bottom:20px;height:35px;padding-left:10px;margin-right:20px;" />
+    <button onclick="@(async()=>(DelClick()))">删除</button>
+    <button onclick="@(async()=>(SaveClick()))" style="margin-left:20px;">保存</button>
+    <br />
+    <textarea rows="30" cols="100" id="code" style="line-height:120%;font-size:14px;"></textarea>
+</div>
 
-sdf af 
+
 @code {
+    public async Task TitleClick() => await js.InvokeVoidAsync("methods.Xml_TitleClick").AsTask();
+    public async Task SaveClick() => await js.InvokeVoidAsync("methods.Xml_Save").AsTask();
+    public async Task DelClick() => await js.InvokeVoidAsync("methods.Xml_Del").AsTask();
+    public async Task AddClick() => await js.InvokeVoidAsync("methods.Xml_Add").AsTask();
+    private Dictionary<string,object> Map()
+    {
+        var map = new Dictionary<string, object>();
+        var xml = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json", false);
 
+        xml.Path.ForEach(a => {
+            if (System.IO.File.Exists(a))
+                map.Add(a, System.IO.File.ReadAllText(a));
+        });
+        return map;
+    }
+
+    public class SqlMap
+    {
+        public List<string> Path { get; set; }
+    }
+
+    private bool firstRender = false;
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!this.firstRender)
+        {
+            Task.Run(async () => await TitleClick()).ConfigureAwait(false);
+            this.firstRender = true;
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    [JSInvokable]
+    public static Task<Dictionary<string, object>> XmlSaveAsyn(object name, object xml)
+    {
+        return FastAopContext.Resolve<IMapService>().XmlSaveAsyn(name, xml);
+    }
+    
+    [JSInvokable]
+    public static Task<Dictionary<string, object>> XmlDelAsyn(object name)
+    {
+        return FastAopContext.Resolve<IMapService>().XmlDelAsyn(name);
+    }
 }
