@@ -5,6 +5,7 @@ global using FastData.Core.Repository;
 global using System.Text;
 global using FastData.Core;
 global using Fast.Api.Blazor.Service;
+global using Fast.Api.Blazor.Model;
 using Fast.Api.Blazor.Filter;
 using Microsoft.AspNetCore.Diagnostics;
 
