@@ -11,16 +11,12 @@ using System.Web;
 using FastData.Core.Repository;
 using FastData.Core.Context;
 using FastData.Core.Base;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Fast.Api
 {
     public class FastApi : IFastApi
     {
-        public async Task ContentAsync(HttpContext context, IFastRepository IFast, ICompositeViewEngine engine, bool IsResource, string dbFile = "db.json")
+        public async Task ContentAsync(HttpContext context, IFastRepository IFast,  bool IsResource, string dbFile = "db.json")
         {
             var name = context.Request.Path.Value.ToStr().Substring(1, context.Request.Path.Value.ToStr().Length - 1).ToLower();
 
@@ -188,45 +184,8 @@ namespace Fast.Api
                     }
                 }
 
-
-                if (IFast.MapView(name).ToStr() != "")
-                {
-                    var viewName = IFast.MapView(name).ToStr();
-                    var viewResult = engine.GetView("~/", viewName, true);
-
-                    if (!viewResult.Success)
-                        await context.Response.WriteAsync("view:" + viewName + " not exists", Encoding.UTF8).ConfigureAwait(false);
-                    else
-                    {
-                        context.Response.ContentType = "text/html;charset=utf-8";
-                        using (var output = new StringWriter())
-                        {
-                            var viewContext = new ViewContext()
-                            {
-                                HttpContext = context,
-                                Writer = output,
-                                View = viewResult.View,
-                                RouteData = new Microsoft.AspNetCore.Routing.RouteData() { },
-                                FormContext = new FormContext(),
-                                ActionDescriptor = new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor()
-                            };
-
-                            if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.PageAll, true) == 0 ||
-                                string.Compare(IFast.MapType(name).ToStr(), AppConfig.Page, true) == 0)
-                                viewContext.ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()) { Model = pageInfo };
-                            else
-                                viewContext.ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()) { Model = data };
-
-                            await viewResult.View.RenderAsync(viewContext).ConfigureAwait(false);
-                            await context.Response.WriteAsync(output.ToString(), Encoding.UTF8).ConfigureAwait(false);
-                        }
-                    }
-                }
-                else
-                {
-                    dic.Add("success", success);
-                    await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
-                }
+                dic.Add("success", success);
+                await context.Response.WriteAsync(BaseJson.ModelToJson(dic), Encoding.UTF8).ConfigureAwait(false);
             }
         }
 
