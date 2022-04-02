@@ -11,6 +11,8 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class FastApiExtension
     {
+        public static ConfigApi config = new ConfigApi();
+
         public static IServiceCollection AddFastApi(this IServiceCollection serviceCollection, Action<ConfigApi> action)
         {
             var config = new ConfigApi();
@@ -37,6 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
             else
                 FastMap.InstanceMap(config.dbKey, config.dbFile, config.mapFile);
 
+            FastApiExtension.config = config;
             return serviceCollection;
         }
 
