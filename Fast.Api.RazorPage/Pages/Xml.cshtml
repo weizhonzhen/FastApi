@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model XmlModel
 
 <h3 style="color:red;text-align:center;">动态生成接口文档(FastApi)</h3>
@@ -9,7 +9,7 @@
             @{
                 foreach (var item in Model.Map)
                 {
-                    <tr><td data-name="@item.Key.Replace("map/","")" data-value="@item.Value">@item.Key</td></tr>
+                    <tr><td data-name="@item.Key" data-value="@item.Value">@item.Key</td></tr>
                 }
             }
         </tbody>
@@ -45,7 +45,6 @@
             url: "xml?handler=Xml",
             data: { "name": $("#name").val(), "xml": editor.getValue() },
             success: function (data) {
-                alert(data.msg);
                 if (data.Issuccess)
                     window.location.reload();
             }

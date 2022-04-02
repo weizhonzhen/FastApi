@@ -3,6 +3,7 @@ using FastData.Core.Repository;
 using FastUntility.Core.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -22,7 +23,7 @@ namespace Fast.Api.RazorPage.Pages
 
         public void OnGet()      
         {
-            var xml = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json", false);
+            var xml = BaseConfig.GetValue<SqlMap>("SqlMap", FastApiExtension.config.mapFile, false);
 
             xml.Path.ForEach(a => {
                 if (System.IO.File.Exists(a))
@@ -42,23 +43,22 @@ namespace Fast.Api.RazorPage.Pages
                 }
                 else
                 {
-                    var xmlPath = string.Format("map/{0}", item.name);
-                    using (var xmlWrite = System.IO.File.Create(xmlPath))
+                    using (var xmlWrite = System.IO.File.Create(item.name))
                     {
                         xmlWrite.Write(Encoding.Default.GetBytes(item.xml));
                     }
 
-                    if (IFast.CheckMap(xmlPath))
+                    if (IFast.CheckMap(item.name))
                     {
-                        var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json", false);
+                        var map = BaseConfig.GetValue<SqlMap>("SqlMap", FastApiExtension.config.mapFile, false);
 
-                        if (!map.Path.Exists(a => a.ToLower() == string.Format("map/{0}", item.name.ToLower())))
+                        if (!map.Path.Exists(a => string.Compare(a, item.name) == 0))
                         {
                             var dic = new Dictionary<string, object>();
-                            map.Path.Add(string.Format("map/{0}", item.name));
+                            map.Path.Add(item.name);
                             dic.Add("SqlMap", map);
                             var json = BaseJson.ModelToJson(dic);
-                            System.IO.File.WriteAllText("map.json", json);
+                            System.IO.File.WriteAllText(FastApiExtension.config.mapFile, json);
                         }
 
                        FastMap.InstanceMap();
@@ -89,17 +89,16 @@ namespace Fast.Api.RazorPage.Pages
                 result.Add("msg", "xml文件名填写不正确");
             else
             {
-                var xmlPath = string.Format("map/{0}", item.name);
-                System.IO.File.Delete(xmlPath);
+                System.IO.File.Delete(item.name);
 
-                var map = BaseConfig.GetValue<SqlMap>("SqlMap", "map.json", false);
-                if (map.Path.Exists(a => a.ToLower() == string.Format("map/{0}", item.name.ToLower())))
+                var map = BaseConfig.GetValue<SqlMap>("SqlMap", FastApiExtension.config.mapFile, false);
+                if (!map.Path.Exists(a => string.Compare(a, item.name) == 0))
                 {
                     var dic = new Dictionary<string, object>();
-                    map.Path.Remove("map/" + item.name);
+                    map.Path.Remove(item.name);
                     dic.Add("SqlMap", map);
                     var json = BaseJson.ModelToJson(dic);
-                    System.IO.File.WriteAllText("map.json", json);
+                    System.IO.File.WriteAllText(FastApiExtension.config.mapFile ,json);
 
                    FastMap.InstanceMap();
                 }
