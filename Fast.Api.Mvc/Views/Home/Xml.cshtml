@@ -1,4 +1,4 @@
-@model System.Collections.Generic.Dictionary<string,object>
+﻿@model System.Collections.Generic.Dictionary<string,object>
 <html>
 <head>
     <script src="/Scripts/jquery-min.js"></script>
@@ -16,7 +16,7 @@
                 @{
                     foreach (var item in Model)
                     {
-                        <tr><td data-name="@item.Key.Replace("map/","")" data-value="@item.Value">@item.Key</td></tr>
+                        <tr><td data-name="@item.Key" data-value="@item.Value">@item.Key</td></tr>
                     }
                 }
             </tbody>
