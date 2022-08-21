@@ -9,7 +9,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Fast.Api.Framework</RootNamespace>
     <AssemblyName>Fast.Api.Framework</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworksVersion>v4.5;v4.6;v4.7;v4.8</TargetFrameworksVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -39,12 +40,19 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RegisterModule.cs" />
     <Compile Include="FastApiModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Fast.Data">
-      <Version>2.4.6</Version>
+      <Version>2.7.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Web.Infrastructure">
+      <Version>2.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="WebActivatorEx">
+      <Version>2.2.0</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
