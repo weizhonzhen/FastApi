@@ -1,5 +1,6 @@
 ﻿using Fast.Api;
 using FastData.Core;
+using FastData.Core.Model;
 using Microsoft.AspNetCore.Builder;
 using System;
 
@@ -29,7 +30,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new Exception("config dbkey is not null");
 
             serviceCollection.AddSingleton<IFastApi, FastApi>();
-            serviceCollection.AddFastDataGeneric(action, repository);
+            serviceCollection.AddFastData(action);
+            serviceCollection.AddFastDataGeneric(repository);
 
             return serviceCollection;
         }
