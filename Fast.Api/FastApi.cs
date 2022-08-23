@@ -203,12 +203,15 @@ namespace Fast.Api
                 using (var content = new StreamReader(context.Request.Body))
                 {
                     if (string.IsNullOrEmpty(param))
-                        param = content.ReadToEnd();
+                        param = content.ReadToEndAsync().Result;
 
                     if (!string.IsNullOrEmpty(param) && param.Substring(0, 1) == "?")
                         param = param.Substring(1, param.Length - 1);
                 }
             }
+            else if (!string.IsNullOrEmpty(param) && param.Substring(0, 1) == "?")
+                param = param.Substring(1, param.Length - 1);
+
             return param;
         }
         #endregion

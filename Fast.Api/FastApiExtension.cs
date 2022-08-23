@@ -1,45 +1,36 @@
 ﻿using Fast.Api;
 using FastData.Core;
-using FastData.Core.Repository;
-using FastUntility.Core;
 using Microsoft.AspNetCore.Builder;
 using System;
-using System.Reflection;
-using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class FastApiExtension
     {
-        public static ConfigApi config = new ConfigApi();
+        public static ConfigData config = new ConfigData();
 
-        public static IServiceCollection AddFastApi(this IServiceCollection serviceCollection, Action<ConfigApi> action)
+        public static IServiceCollection AddFastApi(this IServiceCollection serviceCollection, Action<ConfigData> action)
         {
-            var config = new ConfigApi();
             action(config);
 
             if (string.IsNullOrEmpty(config.dbKey))
                 throw new Exception("config dbkey is not null");
 
-            serviceCollection.AddSingleton<IFastRepository, FastRepository>();
             serviceCollection.AddSingleton<IFastApi, FastApi>();
-            ServiceContext.Init(new ServiceEngine(serviceCollection.BuildServiceProvider()));
+            serviceCollection.AddFastData(action);
+            return serviceCollection;
+        }
 
-            Assembly.GetCallingAssembly().GetReferencedAssemblies().ToList().ForEach(a => {
-                try
-                {
-                    if (!AppDomain.CurrentDomain.GetAssemblies().ToList().Exists(b => b.GetName().Name == a.Name))
-                        Assembly.Load(a.Name);
-                }
-                catch (Exception ex) { }
-            });
+        public static IServiceCollection AddFastApiGeneric(this IServiceCollection serviceCollection, Action<ConfigData> action, Action<ConfigRepository> repository)
+        {
+            action(config);
 
-            if (config.IsResource)
-                FastMap.InstanceMapResource(config.dbKey, config.dbFile, config.mapFile, Assembly.GetCallingAssembly().GetName().Name);
-            else
-                FastMap.InstanceMap(config.dbKey, config.dbFile, config.mapFile);
+            if (string.IsNullOrEmpty(config.dbKey))
+                throw new Exception("config dbkey is not null");
 
-            FastApiExtension.config = config;
+            serviceCollection.AddSingleton<IFastApi, FastApi>();
+            serviceCollection.AddFastDataGeneric(action, repository);
+
             return serviceCollection;
         }
 
