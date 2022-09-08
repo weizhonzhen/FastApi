@@ -1,8 +1,8 @@
 ﻿using Fast.Api;
-using FastData.Core;
 using FastData.Core.Model;
 using Microsoft.AspNetCore.Builder;
 using System;
+using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -13,12 +13,25 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddFastApi(this IServiceCollection serviceCollection, Action<ConfigData> action)
         {
             action(config);
-
-            if (string.IsNullOrEmpty(config.dbKey))
+            
+            if (string.IsNullOrEmpty(config.DbKey))
                 throw new Exception("config dbkey is not null");
 
+            var Current= Assembly.GetCallingAssembly();
+
             serviceCollection.AddSingleton<IFastApi, FastApi>();
-            serviceCollection.AddFastData(action);
+            serviceCollection.AddFastData(a => {
+                a.Aop = config.Aop;
+                a.IsCodeFirst = config.IsCodeFirst;
+                a.MapFile= config.MapFile;
+                a.DbFile= config.DbFile;
+                a.DbKey=config.DbKey;
+                a.IsResource= config.IsResource;
+                a.Current = Current;
+                a.NamespaceCodeFirst = config.NamespaceCodeFirst;
+                a.NamespaceService = config.NamespaceService;
+                a.NamespaceProperties = config.NamespaceProperties;           
+            });
             return serviceCollection;
         }
 
@@ -26,11 +39,24 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             action(config);
 
-            if (string.IsNullOrEmpty(config.dbKey))
+            if (string.IsNullOrEmpty(config.DbKey))
                 throw new Exception("config dbkey is not null");
 
+            var Current = Assembly.GetCallingAssembly();
+
             serviceCollection.AddSingleton<IFastApi, FastApi>();
-            serviceCollection.AddFastData(action);
+            serviceCollection.AddFastData(a => {
+                a.Aop = config.Aop;
+                a.IsCodeFirst = config.IsCodeFirst;
+                a.MapFile = config.MapFile;
+                a.DbFile = config.DbFile;
+                a.DbKey = config.DbKey;
+                a.IsResource = config.IsResource;
+                a.Current = Current;
+                a.NamespaceCodeFirst = config.NamespaceCodeFirst;
+                a.NamespaceService = config.NamespaceService;
+                a.NamespaceProperties = config.NamespaceProperties;
+            });
             serviceCollection.AddFastDataGeneric(repository);
 
             return serviceCollection;

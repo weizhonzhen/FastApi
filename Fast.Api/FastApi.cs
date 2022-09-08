@@ -162,7 +162,7 @@ namespace Fast.Api
                     }
                     else if (string.Compare(IFast.MapType(name).ToStr(), AppConfig.Write, true) == 0 && param.Count > 0)
                     {
-                        var result = db.ExecuteSqlList(sql, tempParam, false).writeReturn;
+                        var result = db.ExecuteSqlList(sql, tempParam, false).WriteReturn;
                         if (result.IsSuccess)
                             success = true;
                         else

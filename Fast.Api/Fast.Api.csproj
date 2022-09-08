@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+	<TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>https://github.com/weizhonzhen/FastApi</Description>
     <PackageProjectUrl>https://github.com/weizhonzhen/FastApi</PackageProjectUrl>
-    <Version>2.0.3</Version>
+    <Version>2.2.5</Version>
     <PackageIconUrl>https://en.gravatar.com/userimage/151376774/1cba1ca23219db268cc5ed8abde11775.png</PackageIconUrl>
     <PackageReleaseNotes>List.Contains  Arrary.Contains  Equals sql in</PackageReleaseNotes>
   </PropertyGroup>
@@ -15,8 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fast.Data.Core" Version="2.9.0" />
-    <PackageReference Include="Fast.Untility.Core" Version="1.5.4" />
+    <PackageReference Include="Fast.Data.Core" Version="3.3.4" />
   </ItemGroup>
 
 </Project>
